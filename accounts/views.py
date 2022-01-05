@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import FileResponse
-from manage import db, get_collection_handle
+# from manage import db, get_collection_handle
+import utils
 
 import datetime
 
@@ -27,16 +28,19 @@ def register_student(request):
                 'email': email}
         #todo validate that the student is a BGU student
 
+        db, client = utils.get_db_handle()
         # create this student in the DB
-        studentCol = db["students"]
+        studentCol = utils.get_collection_handle(db, "students")
+
         print(f"retrieved student collection:\n {studentCol}")
 
         res = studentCol.insert_one(data)
         print("successful insert")
 
         print(res.inserted_id)
+        print(data)
 
-        return JsonResponse(data, safe=False)
+        return HttpResponse(201)
     return HttpResponse("request method wasn't POST")
 
 
