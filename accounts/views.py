@@ -103,6 +103,7 @@ def get_internships(request):
             print("please take this exception and change the code's exception clause to be specific!")
             traceback.print_exc()
 
+
 # internship_obj = {
 #     "companyName": "string",
 #     "internshipName": "string",
