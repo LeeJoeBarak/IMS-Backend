@@ -9,7 +9,8 @@ import traceback
 
 # example for  function that is triggered by route '' (landing page of the website)
 def home(request):
-    return HttpResponse('home !!! :)')
+    return JsonResponse({'key': 'hello world!!! :)'}, safe=False)
+    # return HttpResponse('home !!! :)')
 
 
 def register_student(request):
