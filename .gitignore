@@ -2,3 +2,8 @@
 /venv/
 db.sqlite3
 imsserver.iml
+
+server.cert
+server.key
+
+build

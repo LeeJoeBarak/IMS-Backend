@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,11 +24,14 @@ SECRET_KEY = 'django-insecure-vh6yf503s!2q18aryex-n%^w&6f)rrf55vyjrq^vxmrvdq#%ej
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ALLOWED_HOSTS = ['https://rps.ise.bgu.ac.il/', 'https://rps.ise.bgu.ac.il/njsw36', '10.0.0.136', '132.72.116.72']
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000'
+# REACT_APP_DIR = os.path.join(BASE_DIR, 'django-react-web')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'build', 'static'),
 ]
-
+CORS_ALLOW_ALL_ORIGINS = True
+SECURE_SSL_REDIRECT = True
 
 # Application definition
 
@@ -41,8 +44,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'sslserver',
+    "django_extensions",
+    # 'webpack_loader',
 ]
+#
+# WEBPACK_LOADER = {
+#   'DEFAULT': {
+#     'BUNDLE_DIR_NAME': 'frontend/',
+#     'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
+#   }
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,7 +73,7 @@ ROOT_URLCONF = 'imsserver.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'build', 'index.html'), STATICFILES_DIRS[0]],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

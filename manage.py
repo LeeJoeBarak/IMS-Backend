@@ -12,6 +12,8 @@ import pymongo
 
 # run env: pipenv shell
 # run server in terminal: python manage.py runserver
+
+#run with cert: python manage.py runserver_plus --cert-file server.cert --key-file server.key 0.0.0.0:443
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'imsserver.settings')

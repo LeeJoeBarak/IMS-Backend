@@ -2,16 +2,32 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import FileResponse
+import os
 import utils
 import traceback
+from django.shortcuts import render
 
 # Create your views here.
 
 # example for  function that is triggered by route '' (landing page of the website)
-def home(request):
-    return JsonResponse({'key': 'hello world!!! :)'}, safe=False)
-    # return HttpResponse('home !!! :)')
+from imsserver import settings
 
+
+def home(request):
+    # return JsonResponse('hello world!!! :)', safe=False)
+    return HttpResponse('home !!! :)')
+
+index_file_path = os.path.join(settings.BASE_DIR, 'build', 'index.html')
+# index_file_path = os.path.join(settings.REACT_APP_DIR, 'build', 'index.html')
+
+def react(request):
+    # return render(request, index_file_path)
+    try:
+        print(index_file_path)
+        with open(index_file_path) as f:
+            return HttpResponse(f.read())
+    except FileNotFoundError:
+        print('error!!')
 
 def register_student(request):
     if request.method == "POST":
