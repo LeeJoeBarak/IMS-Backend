@@ -115,11 +115,11 @@ def get_internships(request):
             print(internshipsArr)
             if internshipsArr is not None:
                 return JsonResponse(internshipsArr, safe=False)
-            return HttpResponse('Something went wrong.. probably retrieving the program doc from DB')
+
         except Exception:
             print("please take this exception and change the code's exception clause to be specific!")
             traceback.print_exc()
-    return HttpResponse("request method wasn't GET")
+
 
 # internship_obj = {
 #     "companyName": "string",
