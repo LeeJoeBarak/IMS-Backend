@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home), # Home page data
+    # path('', views.home), # Home page data
     path('users/register/student', views.register_student), # UC2
-    # path("react", views.react, name="react"),
+    path('', views.react, name="react"),
     # path("/react", views.react, name="react"),
     path('assignIntern', views.assign_intern), # UC26
 
@@ -12,11 +12,11 @@ urlpatterns = [
 
    # UC22 - student picks top internships she wants to be interviewed to
     path('internships/{program}', views.get_internships),
-    path('candidate/internshipsPriorities', views.save_student_priorities)
+    path('candidate/internshipsPriorities', views.save_student_priorities),
 
 
     # path('/users/register/program', views.register_program_mngr),
-    # path('/users/login', views.login),
+    path('users/login', views.login),
     # path('/users/logout', views.logout),
 
 ]

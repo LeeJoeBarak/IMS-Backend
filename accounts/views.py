@@ -31,6 +31,7 @@ def react(request):
 
 def register_student(request):
     if request.method == "POST":
+        print(request.POST)
         username = request.POST.get('username')
         firstName = request.POST.get('firstName')
         lastName = request.POST.get('lastName')
