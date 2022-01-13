@@ -1,3 +1,6 @@
+import json
+from rest_framework import status
+from rest_framework.response import Response
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -7,7 +10,8 @@ import utils
 import traceback
 from django.shortcuts import render
 
-# Create your views here.
+
+# status codes: https://www.django-rest-framework.org/api-guide/status-codes/
 
 # example for  function that is triggered by route '' (landing page of the website)
 from imsserver import settings
@@ -31,14 +35,16 @@ def react(request):
 
 def register_student(request):
     if request.method == "POST":
-        print(request.POST)
-        username = request.POST.get('username')
-        firstName = request.POST.get('firstName')
-        lastName = request.POST.get('lastName')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        print(body)
+        username = body.get('username')
+        firstName = body.get('firstName')
+        lastName = body.get('lastName')
+        password = body.get('password')
+        email = body.get('email')
 
-        data = {
+        content = {
             'username': username,
             'firstName': firstName,
             'lastName': lastName,
@@ -50,11 +56,10 @@ def register_student(request):
         #todo validate that the student is a BGU student
         db, client = utils.get_db_handle()
         studentColl = utils.get_collection_handle(db, "students")
-        res = studentColl.insert_one(data)
-        print("successful insert")
+        res = studentColl.insert_one(content)
         print(res.inserted_id)
-        return HttpResponse(201)
-    return HttpResponse("request method wasn't POST")
+        return JsonResponse("register success", status=status.HTTP_201_CREATED, safe=False)
+    return JsonResponse("request method wasn't POST", status=status.HTTP_404_NOT_FOUND, safe=False)
 
  
 def create_internship(request):
@@ -158,7 +163,25 @@ def save_student_priorities(request):
 
 
 def login(request):
-    return NotImplemented
+    if request.method == "POST":
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        print(body)
+
+        username = body.get('username')
+        password = body.get('password')
+
+        #todo Validate username. If wrong username -> return 401 invalid username
+
+        data = {
+            'username': username,
+            'password': password
+        }
+        return JsonResponse("login success", status=status.HTTP_200_OK, safe=False)
+    return JsonResponse("request method wasn't POST", status=status.HTTP_404_NOT_FOUND, safe=False)
+
+    # return NotImplemented
 
 def logout(request):
     return NotImplemented
