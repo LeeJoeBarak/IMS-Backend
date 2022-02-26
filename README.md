@@ -2,6 +2,9 @@
 Internship Management System Backend 
 
 
+![erd](https://user-images.githubusercontent.com/48882261/155854175-66d127ca-5930-4a86-8ae3-fe41b52f7413.png)
+
+
 # How to create an app:
     # manage.py startapp <example>
     # <example> add to INSTALLED_APPS in settings
