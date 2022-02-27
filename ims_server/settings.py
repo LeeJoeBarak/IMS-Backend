@@ -50,9 +50,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'program',
-    'internships',
-    'users',
-    'profileUser'
+    'user',
+    'internship',
+    'profile_user'
 
 ]
 
