@@ -2,7 +2,8 @@
 Internship Management System Backend 
 
 
-![erd](https://user-images.githubusercontent.com/48882261/155854175-66d127ca-5930-4a86-8ae3-fe41b52f7413.png)
+![uml](https://user-images.githubusercontent.com/48882261/155864620-083f759a-b8a8-4ba5-993d-97117fdf490c.png)
+
 
 
 # How to create an app:
