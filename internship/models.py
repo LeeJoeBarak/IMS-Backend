@@ -26,11 +26,12 @@ class Internship(models.Model):
 
 class Priority(models.Model):
     Student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    internship = models.ForeignKey(Internship, on_delete=models.CASCADE)
+    # internship = models.ForeignKey(Internship, on_delete=models.CASCADE)
     status_decision_by_company = models.CharField(default=student_status_for_internship[0],
                                                   max_length=100)
     status_decision_by_program_manager = models.CharField(default=student_status_for_internship[0],
                                                           max_length=100)
+    student_priority_number = models.PositiveIntegerField(default=1)
 
 
 class AssignmentIntern(models.Model):
@@ -41,7 +42,7 @@ class AssignmentIntern(models.Model):
     #     "studentsName": "string"
     # }
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    internship = models.ForeignKey(Internship, on_delete=models.CASCADE)
+    internship = models.ForeignKey(Internship, on_delete=models.CASCADE, default='')
 
 
 class HoursReport(models.Model):
@@ -55,10 +56,10 @@ class HoursReport(models.Model):
     #         }
     #     ]
 
-    intern = models.ForeignKey(AssignmentIntern, on_delete=models.CASCADE, default='')
+    internship = models.ForeignKey(AssignmentIntern, on_delete=models.CASCADE, default='')
     student = models.OneToOneField(Student, on_delete=models.CASCADE, default='')
     mentor = models.OneToOneField(CompanyMentor, on_delete=models.CASCADE)
-    date = models.DateField(auto_now=True)
-    startTime = models.TimeField()
-    endTime = models.TimeField()
+    date = models.CharField(max_length=20, default='1.1.2020')
+    startTime = models.CharField(max_length=20, default='08:00:00')
+    endTime = models.CharField(max_length=20, default='20:00:00')
     status = models.CharField(default=intern_status_approved_hours_by_mentor[0], max_length=100)

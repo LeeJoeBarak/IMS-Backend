@@ -3,6 +3,8 @@ from django.urls import path, include
 from rest_framework import routers
 from internship import views as internship_views
 from program import views as program_views
+from user.api import RegisterAPI, LoginAPI
+from knox import views as knox_views
 
 
 router = routers.DefaultRouter()
@@ -19,6 +21,9 @@ urlpatterns = [
     path('candidate/internshipsPriorities', internship_views.set_internships_priorities_by_candidate),
     # path('hoursRequired/<program>', program_views.get_detail_about_program)
     # path('companyRep/createInternship', internships_views.create_internship)
+    # path('api/auth/', include('knox.urls')),
+    path('users/register/student', RegisterAPI.as_view()),
+    path('users/login', LoginAPI.as_view()),
 
 
 ]

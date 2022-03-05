@@ -52,7 +52,7 @@ class CompanyRepresentative(models.Model):
     # "email": "vaitz@post.bgu.ac.il",
     # "companyName": "Elbit"
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    companyName = models.OneToOneField(Company, on_delete=models.CASCADE)
+    companyName = models.CharField(max_length=100)
 
 
 class ProgramManager(models.Model):

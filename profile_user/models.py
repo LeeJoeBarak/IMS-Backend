@@ -49,7 +49,7 @@ class CompanyProfile(models.Model):
     # "location": "string",
     # "about": "string"
 
-    companyName = models.ForeignKey(Company, on_delete=models.CASCADE)
+    # companyName = models.ForeignKey(Company, on_delete=models.CASCADE)
     yearEstablish = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1900), MaxValueValidator(datetime.now().year)],
@@ -57,4 +57,4 @@ class CompanyProfile(models.Model):
     workersAmount = models.PositiveIntegerField(default=1, blank=True)
     linkedinLink = models.URLField(max_length=200, blank=True)
     location = models.CharField(max_length=200, blank=True)
-    about = models.CharField(max_length=500, blank=True)
+    about = models.CharField(max_length=500, blank=True,primary_key=True)
