@@ -21,7 +21,7 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
 
 # Register Serializer:
@@ -35,20 +35,20 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email' )
+        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         print('in create, validated_data:')
-        print(validated_data['username'])
+        print(validated_data['first_name'])
         user = User.objects.create_user(
             validated_data['username'],
             validated_data['email'],
-            validated_data['password']
-        )
-        user.first_name = validated_data['first_name']
-        user.last_name = validated_data['last_name']
+            validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
 
+        )
         return user
 
 

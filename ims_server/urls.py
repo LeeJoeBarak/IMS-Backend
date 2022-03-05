@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.generic import TemplateView
 from rest_framework import routers
 from internship import views as internship_views
 from program import views as program_views
@@ -27,3 +28,5 @@ urlpatterns = [
 
 
 ]
+
+urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
