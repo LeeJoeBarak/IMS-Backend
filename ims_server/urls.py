@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 from internship import views as internship_views
 from program import views as program_views
-from user.api import RegisterAPI, LoginAPI
+from user.api import RegisterAPI, LoginAPI, LogoutAPI
 from knox import views as knox_views
 
 
@@ -25,6 +25,7 @@ urlpatterns = [
     # path('api/auth/', include('knox.urls')),
     path('users/register/student', RegisterAPI.as_view()),
     path('users/login', LoginAPI.as_view()),
+    # path('users/logout', LogoutAPI.as_view()),
 
 
 ]

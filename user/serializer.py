@@ -16,6 +16,14 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
+# User Serializer
+from user.models import Student
+
+
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ('id', 'username', 'email')
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
@@ -26,11 +34,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Register Serializer:
 
-    # "username": "mayvaitz",
-    # "firstName": "may", :first_name
-    # "lastName": "vaitz", :last_name
-    # "password": "123456!",
-    # "email": "vaitz@post.bgu.ac.il"
+# "username": "mayvaitz",
+# "firstName": "may", :first_name
+# "lastName": "vaitz", :last_name
+# "password": "123456!",
+# "email": "vaitz@post.bgu.ac.il"
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,6 +59,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Student
+#         fields = ('user_id', 'status')
 
 # Login Serializer
 class LoginSerializer(serializers.Serializer):

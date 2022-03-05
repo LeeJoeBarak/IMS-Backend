@@ -87,7 +87,15 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
 WSGI_APPLICATION = 'ims_server.wsgi.application'
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'

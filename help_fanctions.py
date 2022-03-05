@@ -40,6 +40,9 @@ def save_to_path(path):
 # def cv_path():
 #     return os.path.join(settings.LOCAL_FILE_DIR, 'data\cv')
 
+
+# content = ContentType.objects.filter(app_label='api', model='electrics').first()
+
 # How to create an app:
     # manage.py startapp <example>
     # <example> add to INSTALLED_APPS in settings
