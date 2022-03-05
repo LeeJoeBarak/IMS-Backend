@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Internship, Priority
+from .models import Internship
 
 
 class InternshipsSerializer(serializers.ModelSerializer):
@@ -13,11 +13,11 @@ class InternshipsSerializer(serializers.ModelSerializer):
         # "requirments": "string"
 
 
-class NewInternshipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Internship
-        fields = (
-        'companyRepresentative', 'program', 'internshipName', 'companyName', 'about', 'requirements', 'mentor')
+# class NewInternshipSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Internship
+#         fields = (
+#         'companyRepresentative', 'program', 'internshipName', 'companyName', 'about', 'requirements', 'mentor')
 
 
 # "username": "string",
@@ -27,7 +27,7 @@ class NewInternshipSerializer(serializers.ModelSerializer):
 # "requirments": "string",
 # "mentor": "string"
 
-class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Priority
-        fields = ('Student', 'internship')
+# class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Priority
+#         fields = ('Student', 'internship')

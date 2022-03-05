@@ -7,7 +7,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
+from .serializers import InternshipsSerializer
+# from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
 from .models import Internship
 from rest_framework.response import Response
 import help_fanctions
@@ -46,28 +47,28 @@ def get_internships_by_program(request, program):
 # "about": "string",
 # "requirments": "string",
 # "mentor": "string"
-@api_view(['POST'])
-def create_internship(request):
-    if request.method == 'POST':
-        serializer = NewInternshipSerializer(data=request.data)
-
-        if serializer.is_valid():
-            print(serializer.data)
-            # serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+# @api_view(['POST'])
+# def create_internship(request):
+#     if request.method == 'POST':
+#         serializer = NewInternshipSerializer(data=request.data)
+#
+#         if serializer.is_valid():
+#             print(serializer.data)
+#             # serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
 
 # /candidate/internshipsPriorities:
-def set_internships_priorities_by_candidate(request):
-    if request.method == 'POST':
-        serializer = InternshipsPrioritiesByCandidateSerializer(data=request.data)
-
-        if serializer.is_valid():
-            print(serializer.data)
-            # serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# def set_internships_priorities_by_candidate(request):
+#     if request.method == 'POST':
+#         serializer = InternshipsPrioritiesByCandidateSerializer(data=request.data)
+#
+#         if serializer.is_valid():
+#             print(serializer.data)
+#             # serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # def create_internship(request):
 #     """company representative creates an internship offered by his company"""

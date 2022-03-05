@@ -18,7 +18,7 @@ urlpatterns = [
     path('internships/<program>', internship_views.get_internships_by_program),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
-    path('candidate/internshipsPriorities', internship_views.set_internships_priorities_by_candidate),
+    # path('candidate/internshipsPriorities', internship_views.set_internships_priorities_by_candidate),
     # path('hoursRequired/<program>', program_views.get_detail_about_program)
     # path('companyRep/createInternship', internships_views.create_internship)
     # path('api/auth/', include('knox.urls')),

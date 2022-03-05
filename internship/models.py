@@ -26,7 +26,7 @@ class Internship(models.Model):
 
 class Priority(models.Model):
     Student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    # internship = models.ForeignKey(Internship, on_delete=models.CASCADE)
+    internship = models.ForeignKey(Internship, on_delete=models.CASCADE, default='')
     status_decision_by_company = models.CharField(default=student_status_for_internship[0],
                                                   max_length=100)
     status_decision_by_program_manager = models.CharField(default=student_status_for_internship[0],
