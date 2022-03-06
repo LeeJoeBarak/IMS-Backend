@@ -34,11 +34,13 @@ DATABASES = {
 SECRET_KEY = 'django-insecure-s-kuj*&!6^_*5xr%*^er223+k--i!0dahep#8bs))&s288m3so'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
 DEBUG = True
 #start dev backend
 # ALLOWED_HOSTS = []
 #End dev backend
 
+# ALLOWED_HOSTS = []
 
 #     Start adddddd prod!!!!!
 ALLOWED_HOSTS = ['https://rps.ise.bgu.ac.il/', 'https://rps.ise.bgu.ac.il/njsw36', '10.0.0.136', '132.72.116.72']
@@ -75,14 +77,11 @@ INSTALLED_APPS = [
 
 ]
 
-
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -95,7 +94,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # 'DIRS': [BASE_DIR / 'templates']
-        'DIRS': [os.path.join(BASE_DIR, 'build')],  # we don't have 'build' folder yet, it will come after we build our react frontend
+        'DIRS': [os.path.join(BASE_DIR, 'build'), os.path.join(BASE_DIR, 'build', 'static')],  # we don't have 'build' folder yet, it will come after we build our react frontend
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -108,16 +107,20 @@ TEMPLATES = [
     },
 ]
 
-
+# print(STATICFILES_DIRS[0])
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
 
 WSGI_APPLICATION = 'ims_server.wsgi.application'
 
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000'
+]
 
-# start backend
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:3000'
-# ]
-# End backend
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -170,5 +173,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-

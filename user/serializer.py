@@ -16,41 +16,46 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
+# User Serializer
+from user.models import Student
+
+
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ('id', 'username', 'email')
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
-
+        fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
 # Register Serializer:
-
-    # "username": "mayvaitz",
-    # "firstName": "may", :first_name
-    # "lastName": "vaitz", :last_name
-    # "password": "123456!",
-    # "email": "vaitz@post.bgu.ac.il"
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email' )
+        fields = ('id', 'username', 'first_name', 'last_name', 'password', 'email')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         print('in create, validated_data:')
-        print(validated_data['username'])
+        print(validated_data['first_name'])
         user = User.objects.create_user(
             validated_data['username'],
             validated_data['email'],
-            validated_data['password']
-        )
-        user.first_name = validated_data['first_name']
-        user.last_name = validated_data['last_name']
+            validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
 
+        )
         return user
 
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Student
+#         fields = ('user_id', 'status')
 
 # Login Serializer
 class LoginSerializer(serializers.Serializer):
