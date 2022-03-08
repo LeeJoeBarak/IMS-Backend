@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
-student_status = ['candidate', 'advanced_candidate', 'intern']
+student_status = ['student', 'advancedCandidate', 'intern']
 
 student_status_for_internship = {
     0: 'not accepted',
@@ -32,6 +32,7 @@ cv_storage = FileSystemStorage(location='./data/')
 photo_storage = FileSystemStorage(location='./data/')
 gradesSheet_storage = FileSystemStorage(location='./data/')
 
+# companies_list = Company.objects.values_list('companyName', flat=True).order_by('companyName')
 
 def save_to_path(path):
     return os.path.join(settings.LOCAL_FILE_DIR, path)

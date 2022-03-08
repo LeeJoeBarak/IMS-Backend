@@ -19,7 +19,7 @@ class Student(models.Model):
 
     # student_status = ['candidate', 'advanced_candidate', 'intern']
     def __str__(self):
-        return "Student"
+        return self.status
 
 
 class Company(models.Model):
@@ -49,7 +49,7 @@ class CompanyMentor(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "CompanyMentor"
+        return "mentor"
 
 
 class CompanyRepresentative(models.Model):
@@ -64,7 +64,7 @@ class CompanyRepresentative(models.Model):
     companyName = models.CharField(max_length=100)
 
     def __str__(self):
-        return "CompanyRepresentative"
+        return "companyRepresentative"
 
 
 class ProgramManager(models.Model):
@@ -77,7 +77,7 @@ class ProgramManager(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "ProgramManager"
+        return "programManager"
 
 
 class ProgramCoordinator(models.Model):
@@ -90,4 +90,8 @@ class ProgramCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "ProgramCoordinator"
+        return "programCoordinator"
+
+
+# export const GUEST = "guest";
+# export const SYSTEM_MANAGER = "systemManager";
