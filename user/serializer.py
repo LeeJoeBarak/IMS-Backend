@@ -2,22 +2,13 @@
 # from .models import CompanyRepresentative
 #
 #
-# class CompanyRepresentativeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = CompanyRepresentative
-#         fields = ('user', 'companyName')
-#
-#         # "companyName": "string",
-#         # "internshipName": "string",
-#         # "about": "string",
-#         # "requirments": "string"
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 # User Serializer
-from user.models import Student
+from user.models import Student, Company
 
 
 # class UserSerializer(serializers.ModelSerializer):
@@ -31,6 +22,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ('companyName',)
+
+
 # Register Serializer:
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -40,8 +38,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        print('in create, validated_data:')
-        print(validated_data['first_name'])
         user = User.objects.create_user(
             validated_data['username'],
             validated_data['email'],
@@ -51,6 +47,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         )
         return user
+
 
 # class UserSerializer(serializers.ModelSerializer):
 #     class Meta:

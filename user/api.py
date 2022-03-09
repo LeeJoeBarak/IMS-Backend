@@ -9,11 +9,12 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.settings import api_settings
 
-from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator
+from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator, Company
 from .serializer import UserSerializer, RegisterSerializer, LoginSerializer
 
 
-# Register API
+# Register API:
+# /users/register/student:
 class RegisterAPI(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
@@ -29,6 +30,122 @@ class RegisterAPI(generics.GenericAPIView):
         student_user = Student.objects.create(
             user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'])
         student_user.save()
+        return Response(
+            content_type='A new user has been added',
+            status=status.HTTP_201_CREATED,
+            data={
+                "user": UserSerializer(user, context=self.get_serializer_context()).data,
+                "token": AuthToken.objects.create(user)[1],
+            }
+        )
+
+
+# /users/register/companyRep:
+class RegisterCompanyRepAPI(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        print("request.data[companyName]: ", request.data['companyName'])
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
+        # serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        companyRep_user = CompanyRepresentative.objects.create(
+            user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'],
+            companyName=request.data['companyName'])
+        companyRep_user.save()
+
+        company_user = Company.objects.create(
+            companyName=companyRep_user.companyName)
+        company_user.save()
+
+        return Response(
+            content_type='A new user has been added',
+            status=status.HTTP_201_CREATED,
+            data={
+                "user": UserSerializer(user, context=self.get_serializer_context()).data,
+                "token": AuthToken.objects.create(user)[1],
+            }
+        )
+
+
+# /users/register/mentor:
+class RegisterMentorAPI(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        companies_list = Company.objects.values_list('companyName', flat=True).order_by('companyName')
+        if request.data['companyName'] in companies_list:
+            serializer = self.get_serializer(data=request.data)
+            if not serializer.is_valid():
+                return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
+            user = serializer.save()
+
+            companyMentor_user = CompanyMentor.objects.create(
+                user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'],
+                company_id=request.data['companyName'])
+            companyMentor_user.save()
+
+            return Response(
+                content_type='A new user has been added',
+                status=status.HTTP_201_CREATED,
+                data={
+                    "user": UserSerializer(user, context=self.get_serializer_context()).data,
+                    "token": AuthToken.objects.create(user)[1],
+                }
+            )
+        else:
+            return Response('This company does not exist', status.HTTP_404_NOT_FOUND)
+
+
+# /users/register/programCoordinator:
+class RegisterProgramCoordinatorAPI(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
+        # serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        programCoordinator_user = ProgramCoordinator.objects.create(
+            user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'])
+        programCoordinator_user.save()
+        return Response(
+            content_type='A new user has been added',
+            status=status.HTTP_201_CREATED,
+            data={
+                "user": UserSerializer(user, context=self.get_serializer_context()).data,
+                "token": AuthToken.objects.create(user)[1],
+            }
+        )
+
+
+# /users/register/programManager
+class RegisterProgramManagerAPI(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
+        # serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        programManager_user = ProgramManager.objects.create(
+            user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'])
+        programManager_user.save()
         return Response(
             content_type='A new user has been added',
             status=status.HTTP_201_CREATED,
