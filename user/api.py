@@ -33,10 +33,6 @@ class RegisterAPI(generics.GenericAPIView):
         return Response(
             content_type='A new user has been added',
             status=status.HTTP_201_CREATED,
-            data={
-                "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": AuthToken.objects.create(user)[1],
-            }
         )
 
 
@@ -65,11 +61,7 @@ class RegisterCompanyRepAPI(generics.GenericAPIView):
 
         return Response(
             content_type='A new user has been added',
-            status=status.HTTP_201_CREATED,
-            data={
-                "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": AuthToken.objects.create(user)[1],
-            }
+            status=status.HTTP_201_CREATED
         )
 
 
@@ -94,11 +86,7 @@ class RegisterMentorAPI(generics.GenericAPIView):
 
             return Response(
                 content_type='A new user has been added',
-                status=status.HTTP_201_CREATED,
-                data={
-                    "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                    "token": AuthToken.objects.create(user)[1],
-                }
+                status=status.HTTP_201_CREATED
             )
         else:
             return Response('This company does not exist', status.HTTP_404_NOT_FOUND)
@@ -122,11 +110,7 @@ class RegisterProgramCoordinatorAPI(generics.GenericAPIView):
         programCoordinator_user.save()
         return Response(
             content_type='A new user has been added',
-            status=status.HTTP_201_CREATED,
-            data={
-                "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": AuthToken.objects.create(user)[1],
-            }
+            status=status.HTTP_201_CREATED
         )
 
 
@@ -148,11 +132,7 @@ class RegisterProgramManagerAPI(generics.GenericAPIView):
         programManager_user.save()
         return Response(
             content_type='A new user has been added',
-            status=status.HTTP_201_CREATED,
-            data={
-                "user": UserSerializer(user, context=self.get_serializer_context()).data,
-                "token": AuthToken.objects.create(user)[1],
-            }
+            status=status.HTTP_201_CREATED
         )
 
 
