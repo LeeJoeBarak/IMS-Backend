@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 # User Serializer
+from program.models import StudentAndProgram
 from user.models import Student, Company
 
 
@@ -49,10 +50,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Student
-#         fields = ('user_id', 'status')
+class StudentProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentAndProgram
+        fields = ('program_id', 'user_id')
 
 # Login Serializer
 class LoginSerializer(serializers.Serializer):

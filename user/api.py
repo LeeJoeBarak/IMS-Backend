@@ -9,8 +9,9 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.settings import api_settings
 
+from program.models import StudentAndProgram
 from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator, Company
-from .serializer import UserSerializer, RegisterSerializer, LoginSerializer
+from .serializer import UserSerializer, RegisterSerializer, LoginSerializer, StudentProgramSerializer
 
 
 # Register API:
@@ -30,6 +31,13 @@ class RegisterAPI(generics.GenericAPIView):
         student_user = Student.objects.create(
             user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'])
         student_user.save()
+        student_program = StudentAndProgram.objects.create(
+            program_id=request.data['program'],
+            student_id=UserSerializer(user, context=self.get_serializer_context()).data['id']
+        )
+        student_program.save()
+
+
         return Response(
             content_type='A new user has been added',
             status=status.HTTP_201_CREATED,
