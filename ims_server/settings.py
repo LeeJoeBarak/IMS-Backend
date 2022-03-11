@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,26 +33,11 @@ DATABASES = {
 SECRET_KEY = 'django-insecure-s-kuj*&!6^_*5xr%*^er223+k--i!0dahep#8bs))&s288m3so'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
 DEBUG = True
-#start dev backend
-# ALLOWED_HOSTS = []
-#End dev backend
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
-#     Start adddddd prod!!!!!
-ALLOWED_HOSTS = ['https://rps.ise.bgu.ac.il/', 'https://rps.ise.bgu.ac.il/njsw36', '10.0.0.136', '132.72.116.72']
 
-# REACT_APP_DIR = os.path.join(BASE_DIR, 'django-react-web')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'build', 'static'),
-    os.path.join(BASE_DIR, 'build'),
-]
-CORS_ALLOW_ALL_ORIGINS = True
-SECURE_SSL_REDIRECT = True
-
-#     End adddddd prod!!!!!
 # Application definition
 
 INSTALLED_APPS = [
@@ -69,11 +53,7 @@ INSTALLED_APPS = [
     'program',
     'user',
     'internship',
-    'profile_user',
-#     Start adddddd prod!!!!!
-    'sslserver',
-    "django_extensions",
-#     End adddddd prod!!!!!
+    'profile_user'
 
 ]
 
@@ -81,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -93,8 +73,8 @@ ROOT_URLCONF = 'ims_server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [BASE_DIR / 'templates']
-        'DIRS': [os.path.join(BASE_DIR, 'build'), os.path.join(BASE_DIR, 'build', 'static')],  # we don't have 'build' folder yet, it will come after we build our react frontend
+        'DIRS': [BASE_DIR / 'templates']
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -107,7 +87,6 @@ TEMPLATES = [
     },
 ]
 
-# print(STATICFILES_DIRS[0])
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -116,6 +95,7 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'ims_server.wsgi.application'
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
