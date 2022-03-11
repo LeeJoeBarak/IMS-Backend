@@ -31,16 +31,20 @@ router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
 
 urlpatterns = [
-    path('', react, name="react"),
+    # path('', react, name="react"),
     path('', include(router.urls)),
+    path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
     path('internships/<program>', internship_views.get_internships_by_program),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
+    path('activePrograms', program_views.get_active_program),
     # path('candidate/internshipsPriorities', internship_views.set_internships_priorities_by_candidate),
     # path('hoursRequired/<program>', program_views.get_detail_about_program)
     # path('companyRep/createInternship', internships_views.create_internship)
     # path('api/auth/', include('knox.urls')),
+
+
     # register:
     path('users/register/student', RegisterAPI.as_view()),
     path('users/register/companyRep', RegisterCompanyRepAPI.as_view()),

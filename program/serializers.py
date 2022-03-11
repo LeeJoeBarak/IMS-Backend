@@ -18,3 +18,9 @@ class HoursRequiredSerializer(serializers.ModelSerializer):
     class Meta:
         model = Program
         fields = ('program', 'hoursRequired')
+
+
+class ProgramNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = ('program',)
