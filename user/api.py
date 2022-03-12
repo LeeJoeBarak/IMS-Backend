@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.settings import api_settings
+from knox.settings import knox_settings
 
 from program.models import StudentAndProgram, CompanyMentorAndProgram, CompanyRepresentativeAndProgram, \
     ProgramManagerAndProgram, ProgramCoordinatorAndProgram
@@ -56,7 +57,6 @@ class RegisterCompanyRepAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        print("request.data[companyName]: ", request.data['companyName'])
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
@@ -171,9 +171,9 @@ class RegisterProgramManagerAPI(generics.GenericAPIView):
 
 # Login API
 class LoginAPI(generics.GenericAPIView):
-    authentication_classes = ()
+    # authentication_classes = ()
     permission_classes = ()
-    # authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     # permission_classes = (IsAuthenticated,)
     serializer_class = LoginSerializer
 
@@ -182,7 +182,7 @@ class LoginAPI(generics.GenericAPIView):
         if not serializer.is_valid():
             return Response('Invalid username/password supplied', status.HTTP_401_UNAUTHORIZED)
         user = serializer.validated_data
-        _, token = AuthToken.objects.create(user)
+        _, token = AuthToken.objects.create(user, knox_settings.TOKEN_TTL)
         # Check the model of the user:
         # student
         model = Student.objects.filter(user_id=user.id).first()
@@ -227,8 +227,7 @@ class LoginAPI(generics.GenericAPIView):
                                 })
 
         if model is not None:
-        #     # user_logged_in.send(sender=request.user.__class__,
-        #     #                     request=request, user=request.user)
+            user_logged_in.send(sender=user.__class__, request=request, user=user)
             if program is None:
                 program_id = ''
             else:
@@ -249,10 +248,10 @@ class LoginAPI(generics.GenericAPIView):
 # Logout API
 class LogoutAPI(generics.GenericAPIView):
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
-        request._auth.delete()
-        # user_logged_out.send(sender=request.user.__class__,
-        #                      request=request, user=request.user)
+        # request._auth.delete()
+        user_logged_out.send(sender=request.user.__class__,
+                             request=request, user=request.user)
         return Response('successful logout', status=status.HTTP_204_NO_CONTENT)

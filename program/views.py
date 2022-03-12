@@ -83,8 +83,6 @@ class PostCreateProgram(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         # create program:
-        print("request.data: ", request.data)
-
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response('A program with the same name already exists', status.HTTP_400_BAD_REQUEST)
