@@ -24,3 +24,30 @@ class ProgramNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Program
         fields = ('program',)
+
+
+class CreateProgramSerializer(serializers.ModelSerializer):
+    # {
+    #     "program": "string",
+    #     "year": 0,
+    #     "semester": "string",
+    #     "prioritiesAmount": 0,
+    #     "hoursRequired": 0,
+    #     "depratment": "string",
+    #     "programManager": "string"
+    # }
+    class Meta:
+        model = Program
+        fields = ('program', 'year', 'semester', 'prioritiesAmount', 'hoursRequired', 'department')
+
+    def create(self, validated_data):
+        program = Program.objects.create(
+            program=validated_data['program'],
+            year=validated_data['year'],
+            semester=validated_data['semester'],
+            prioritiesAmount=validated_data['prioritiesAmount'],
+            hoursRequired=validated_data['hoursRequired'],
+            department=validated_data['department']
+
+        )
+        return program

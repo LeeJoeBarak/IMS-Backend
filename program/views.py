@@ -5,9 +5,14 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import PrioritiesAmountSerializer, HoursRequiredSerializer, ProgramNameSerializer
-from .models import Program
+
+from user.models import ProgramManager
+from .serializers import PrioritiesAmountSerializer, HoursRequiredSerializer, ProgramNameSerializer, \
+    CreateProgramSerializer
+from .models import Program, ProgramManagerAndProgram
 from rest_framework.response import Response
+from rest_framework import generics, permissions
+
 import help_fanctions
 
 
@@ -65,13 +70,82 @@ def get_active_program(request):
         # # amount = amount[0]
         program_list = Program.objects.values_list('program', flat=True).order_by('program')
         program_list = list(program_list)
-        print("program_list:", program_list)
+        # print("program_list:", program_list)
         # return JsonResponse(program_serializer.data, safe=False)
         return JsonResponse(program_list, safe=False)
 
 
+# POST /admin/openProgram:
+class PostCreateProgram(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = CreateProgramSerializer
+
+    def post(self, request, *args, **kwargs):
+        # create program:
+        print("request.data: ", request.data)
+
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response('A program with the same name already exists', status.HTTP_400_BAD_REQUEST)
+
+        # check if manager exist:
+        programManager = ProgramManager.objects.filter(pk=request.data['programManager'])
+        if len(programManager) == 0:
+            return Response('Invalid program manager supplied (not exist)', status.HTTP_404_NOT_FOUND)
+
+        program = serializer.save()
+
+        programManager_program = ProgramManagerAndProgram.objects.create(
+            program_id=ProgramNameSerializer(program, context=self.get_serializer_context()).data['program'],
+            programManager_id=request.data['programManager'])
+        programManager_program.save()
+
+        return Response(
+            content_type='successful open a program',
+            status=status.HTTP_201_CREATED
+        )
+
+# @api_view(['POST'])
+# def post_create_new_program(request):
+#     # {
+#     #     "program": "string",
+#     #     "year": 0,
+#     #     "semester": "string",
+#     #     "prioritiesAmount": 0,
+#     #     "hoursRequired": 0,
+#     #     "depratment": "string",
+#     #     "programManager": "string"
+#     # }
+#
+#     if request.method == 'POST':
+#         print("request.data: ", request.data)
+#         serializer = self.get_serializer(data=request.data)
+#         if not serializer.is_valid():
+#             return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
+#         # serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#
+#         companyRep_user = CompanyRepresentative.objects.create(
+#             user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'],
+#             companyName=request.data['companyName'])
+#         companyRep_user.save()
+#
+#         company_user = Company.objects.create(
+#             companyName=companyRep_user.companyName)
+#         company_user.save()
+#
+#         return Response(
+#             content_type='A new user has been added',
+#             status=status.HTTP_201_CREATED
+#         )
 
 
+# manager_list = ProgramManager.objects.values_list('user_id', flat=True).order_by('user_id')
+# manager_list = list(manager_list)
+# users = User.objects.filter(pk__in=manager_list)
+# manager = UserDetailsSerializer(users, many=True)
+# return JsonResponse(manager.data, safe=False)
 
 
 # get_detail_about_program(detail = 'hoursRequired')
