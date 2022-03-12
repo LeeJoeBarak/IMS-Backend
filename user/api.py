@@ -9,10 +9,14 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.settings import api_settings
 
-from program.models import StudentAndProgram
+from program.models import StudentAndProgram, CompanyMentorAndProgram, CompanyRepresentativeAndProgram, \
+    ProgramManagerAndProgram, ProgramCoordinatorAndProgram
+from program.serializers import StudentAndProgramSerializers, CompanyMentorAndProgramSerializers, \
+    CompanyRepresentativeAndProgramSerializers, ProgramManagerAndProgramSerializers, \
+    ProgramCoordinatorAndProgramSerializers
 from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator, Company, \
     SystemManager
-from .serializer import UserSerializer, RegisterSerializer, LoginSerializer, StudentProgramSerializer
+from .serializer import UserSerializer, RegisterSerializer, LoginSerializer, StudentProgramSerializer, ProgramSerializer
 
 
 # Register API:
@@ -180,28 +184,62 @@ class LoginAPI(generics.GenericAPIView):
         user = serializer.validated_data
         _, token = AuthToken.objects.create(user)
         # Check the model of the user:
+        # student
         model = Student.objects.filter(user_id=user.id).first()
+        if model is not None:
+            program = StudentAndProgram.objects.filter(student_id=user.id).first()
+            if program is not None:
+                dataProgram = StudentAndProgramSerializers(program)
         if model is None:
             model = CompanyMentor.objects.filter(user_id=user.id).first()
+            if model is not None:
+                program = CompanyMentorAndProgram.objects.filter(companyMentor_id=user.id).first()
+                if program is not None:
+                    dataProgram = CompanyMentorAndProgramSerializers(program)
             if model is None:
                 model = CompanyRepresentative.objects.filter(user_id=user.id).first()
+                if model is not None:
+                    program = CompanyRepresentativeAndProgram.objects.filter(companyRepresentative_id=user.id).first()
+                    if program is not None:
+                        dataProgram = CompanyRepresentativeAndProgramSerializers(program)
                 if model is None:
                     model = ProgramManager.objects.filter(user_id=user.id).first()
+                    if model is not None:
+                        program = ProgramManagerAndProgram.objects.filter(programManager_id=user.id).first()
+                        if program is not None:
+                            dataProgram = ProgramManagerAndProgramSerializers(program)
                     if model is None:
                         model = ProgramCoordinator.objects.filter(user_id=user.id).first()
+                        if model is not None:
+                            program = ProgramCoordinatorAndProgram.objects.filter(programCoordinator_id=user.id).first()
+                            if program is not None:
+                                dataProgram = ProgramCoordinatorAndProgramSerializers(program)
+
                         if model is None:
                             model = SystemManager.objects.filter(user_id=user.id).first()
+                            if model is not None:
+                                data = UserSerializer(user, context=self.get_serializer_context()).data
+                                return Response({
+                                    "userType": model.__str__(),
+                                    "username": data['username'],
+                                    "firstName": data['first_name'],
+                                    "session": token,
+                                })
 
         if model is not None:
-            # user_logged_in.send(sender=request.user.__class__,
-            #                     request=request, user=request.user)
+        #     # user_logged_in.send(sender=request.user.__class__,
+        #     #                     request=request, user=request.user)
+            if program is None:
+                program_id = ''
+            else:
+                program_id = dataProgram.data['program_id']
             data = UserSerializer(user, context=self.get_serializer_context()).data
-            # userData = {email}
             return Response({
                 "userType": model.__str__(),
                 "username": data['username'],
                 "firstName": data['first_name'],
-                "session": token
+                "session": token,
+                "program": program_id
             })
 
         # Student.objects.filter(student_id=user.id).first()

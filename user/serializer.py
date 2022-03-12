@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 # User Serializer
-from program.models import StudentAndProgram
+from program.models import StudentAndProgram, Program
 from user.models import Student, Company, ProgramManager
 
 
@@ -29,6 +29,12 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ('companyName',)
+
+
+class ProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = ('program',)
 
 
 # Register Serializer:
