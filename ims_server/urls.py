@@ -35,8 +35,10 @@ urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
+    path('programManagers', user_views.get_program_managers),
     path('internships/<program>', internship_views.get_internships_by_program),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
+    path('admin/openProgram', program_views.PostCreateProgram.as_view()),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
     path('activePrograms', program_views.get_active_program),
     # path('candidate/internshipsPriorities', internship_views.set_internships_priorities_by_candidate),
@@ -54,7 +56,7 @@ urlpatterns = [
     # login:
     path('users/login', LoginAPI.as_view()),
     # logout:
-    # path('users/logout', LogoutAPI.as_view()),
+    path('users/logout', LogoutAPI.as_view()),
 
 ]
 
