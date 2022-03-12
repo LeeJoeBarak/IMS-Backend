@@ -55,5 +55,11 @@ class ProgramCoordinator(models.Model):
         return "programCoordinator"
 
 
+class SystemManager(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return "systemManager"
+
 # export const GUEST = "guest";
 # export const SYSTEM_MANAGER = "systemManager";

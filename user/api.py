@@ -10,7 +10,8 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.settings import api_settings
 
 from program.models import StudentAndProgram
-from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator, Company
+from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator, Company, \
+    SystemManager
 from .serializer import UserSerializer, RegisterSerializer, LoginSerializer, StudentProgramSerializer
 
 
@@ -143,6 +144,26 @@ class RegisterProgramManagerAPI(generics.GenericAPIView):
             status=status.HTTP_201_CREATED
         )
 
+# # /users/register/systemManager
+# class RegisterSystemManagerAPI(generics.GenericAPIView):
+#     authentication_classes = []
+#     permission_classes = []
+#     serializer_class = RegisterSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         if not serializer.is_valid():
+#             return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
+#         # serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#
+#         systemManager_user = SystemManager.objects.create(
+#             user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'])
+#         systemManager_user.save()
+#         return Response(
+#             content_type='A new user has been added',
+#             status=status.HTTP_201_CREATED
+#         )
 
 # Login API
 class LoginAPI(generics.GenericAPIView):
@@ -168,6 +189,8 @@ class LoginAPI(generics.GenericAPIView):
                     model = ProgramManager.objects.filter(user_id=user.id).first()
                     if model is None:
                         model = ProgramCoordinator.objects.filter(user_id=user.id).first()
+                        if model is None:
+                            model = SystemManager.objects.filter(user_id=user.id).first()
 
         if model is not None:
             # user_logged_in.send(sender=request.user.__class__,
