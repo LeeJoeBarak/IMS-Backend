@@ -31,7 +31,7 @@ router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
 
 urlpatterns = [
-    # path('', react, name="react"),
+    path('', react, name="react"),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
