@@ -1,3 +1,5 @@
+from tokenize import String
+
 from django.shortcuts import get_object_or_404
 from knox.auth import TokenAuthentication
 from rest_framework import generics, permissions
@@ -182,7 +184,9 @@ class LoginAPI(generics.GenericAPIView):
         if not serializer.is_valid():
             return Response('Invalid username/password supplied', status.HTTP_401_UNAUTHORIZED)
         user = serializer.validated_data
-        _, token = AuthToken.objects.create(user, knox_settings.TOKEN_TTL)
+        # _, token = AuthToken.objects.create(user, knox_settings.TOKEN_TTL)
+        token = AuthToken.objects.create(user, knox_settings.TOKEN_TTL)[1]
+        newToken = token[0:8]
         # Check the model of the user:
         # student
         model = Student.objects.filter(user_id=user.id).first()
@@ -223,9 +227,11 @@ class LoginAPI(generics.GenericAPIView):
                                     "userType": model.__str__(),
                                     "username": data['username'],
                                     "firstName": data['first_name'],
-                                    "session": token,
+                                    "session": newToken,
                                 })
+        # print(token)
 
+        # print("newToken: ", newToken)
         if model is not None:
             user_logged_in.send(sender=user.__class__, request=request, user=user)
             if program is None:
@@ -237,7 +243,7 @@ class LoginAPI(generics.GenericAPIView):
                 "userType": model.__str__(),
                 "username": data['username'],
                 "firstName": data['first_name'],
-                "session": token,
+                "session": newToken,
                 "program": program_id
             })
 
@@ -249,9 +255,14 @@ class LoginAPI(generics.GenericAPIView):
 class LogoutAPI(generics.GenericAPIView):
     authentication_classes = (TokenAuthentication,)
     # permission_classes = (IsAuthenticated,)
+    permission_classes = ()
 
     def post(self, request, format=None):
-        # request._auth.delete()
+
+        # auth_token.delete()
+        obj = AuthToken.objects.get(token_key=request.data['Authorization'])
+        # print("AuthToken.objects.get(token_key=): ", obj)
+        obj.delete()
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
         return Response('successful logout', status=status.HTTP_204_NO_CONTENT)
