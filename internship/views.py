@@ -125,11 +125,11 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
         #     programManager_id=request.data['programManager'])
         # programManager_program.save()
 
-        return Response(
-            content_type='successful open a program',
-            status=status.HTTP_201_CREATED
-        )
-
+        # return Response(
+        #     content_type='successful open a program',
+        #     # status=status.HTTP_201_CREATED
+        # )
+#
 # /candidate/internshipsPriorities:
 # def set_internships_priorities_by_candidate(request):
 #     if request.method == 'POST':
