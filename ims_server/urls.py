@@ -35,6 +35,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
+    path('users/details/<username>', user_views.get_details_about_user_by_username),
     path('programManagers', user_views.get_program_managers),
     path('internships/<program>', internship_views.get_internships_by_program),
     # path('companyRep/createInternship', internship_views.PostCreateInternshipByCompanyRep.as_view()),
