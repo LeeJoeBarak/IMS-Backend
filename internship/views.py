@@ -86,6 +86,7 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
 
 
+
 # POST /companyRep/createInternship
 class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
     authentication_classes = []
