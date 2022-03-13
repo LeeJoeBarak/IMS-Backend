@@ -67,7 +67,8 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
         internshipName = Internship.objects.filter(pk=request.data['internshipName'])
         # print('4. internshipName: ', internshipName)
         if program is None or company is None or len(internshipName) != 0:
-            return Response('Invalid program / company / internship name supplied already exists', status.HTTP_400_BAD_REQUEST)
+            return Response('Invalid program / company / internship name supplied already exists',
+                            status.HTTP_400_BAD_REQUEST)
 
         program_id = program[0]
         companyName_id = company[0]
@@ -84,11 +85,38 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
 
 
+# POST /companyRep/createInternship
+class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = CreateInternshipSerializer
 
+    def post(self, request, *args, **kwargs):
+        # create internship:
+        # print('1. request.data: ',request.data)
+        program = Program.objects.filter(pk=request.data['program'])
+        # print('2. program: ', program[0])
+        company = Company.objects.filter(pk=request.data['company'])
+        # print('3. company: ', company[0])
+        internshipName = Internship.objects.filter(pk=request.data['internshipName'])
+        # print('4. internshipName: ', internshipName)
+        if program is None or company is None or len(internshipName) != 0:
+            return Response('Invalid program / company / internship name supplied already exists',
+                            status.HTTP_400_BAD_REQUEST)
 
+        program_id = program[0]
+        companyName_id = company[0]
+        internship = Internship.objects.create(
+            program=program_id,
+            internshipName=request.data['internshipName'],
+            companyName=companyName_id,
+            about=request.data['about'],
+            requirements=request.data['requirements']
+        )
+        # print('5. internship: ', internship)
 
-
-
+        return Response(
+            content_type='successful create a internship request', status=status.HTTP_201_CREATED)
 
         # POST /companyRep/createInternship
         # {
