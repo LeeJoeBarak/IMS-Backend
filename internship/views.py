@@ -7,11 +7,17 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import InternshipsSerializer
+
+from program.models import Program
+from user.models import Company
+from .serializers import InternshipsSerializer, CreateInternshipSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
 from .models import Internship
 from rest_framework.response import Response
+from knox.models import AuthToken
+
 import help_fanctions
+from rest_framework import generics, permissions
 
 
 class InternshipsView(viewsets.ModelViewSet):
@@ -38,27 +44,92 @@ def get_internships_by_program(request, program):
         # 'safe=False' for objects serialization
 
 
-# GET /prioritiesAmount/{program}
+# POST /programManager/createInternship:
+# {
+#     "program": "string",
+#     "company": "string",
+#     "internshipName": "string",
+#     "about": "string",
+#     "requirements": "string"
+# # }
+class PostCreateInternshipByProgramManager(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = CreateInternshipSerializer
 
-# post /companyRep/createInternship:
-# "username": "string",
-# "companyName": "string",
-# "internshipName": "string",
-# "about": "string",
-# "requirments": "string",
-# "mentor": "string"
-# @api_view(['POST'])
-# def create_internship(request):
-#     if request.method == 'POST':
-#         serializer = NewInternshipSerializer(data=request.data)
-#
-#         if serializer.is_valid():
-#             print(serializer.data)
-#             # serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
+    def post(self, request, *args, **kwargs):
+        # create internship:
+        # print('1. request.data: ',request.data)
+        program = Program.objects.filter(pk=request.data['program'])
+        # print('2. program: ', program[0])
+        company = Company.objects.filter(pk=request.data['company'])
+        # print('3. company: ', company[0])
+        internshipName = Internship.objects.filter(pk=request.data['internshipName'])
+        # print('4. internshipName: ', internshipName)
+        if program is None or company is None or len(internshipName) != 0:
+            return Response('Invalid program / company / internship name supplied already exists', status.HTTP_400_BAD_REQUEST)
 
+        program_id = program[0]
+        companyName_id = company[0]
+        internship = Internship.objects.create(
+            program=program_id,
+            internshipName=request.data['internshipName'],
+            companyName=companyName_id,
+            about=request.data['about'],
+            requirements=request.data['requirements']
+        )
+        # print('5. internship: ', internship)
+
+        return Response(
+            content_type='successful create a internship request', status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+
+        # POST /companyRep/createInternship
+        # {
+        #     "program": "string",
+        #     "internshipName": "string",
+        #     "about": "string",
+        #     "requirements": "string"
+        # }
+        # class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
+        #     # authentication_classes = []
+        #     # permission_classes = []
+        #     # serializer_class = CreateProgramSerializer
+        #
+        #     def post(self, request, *args, **kwargs):
+        #         # id = "SELECT user_id from main.knox_authtoken where token_key = '7bdcac92'"
+        #         # # print(': ', companyRep/createInternship)
+        #         lToken = '7bdcac92'
+        #         q = AuthToken.objects.raw('SELECT user_id from main.knox_authtoken where token_key = %s', [lToken])
+        #         print('q: ', q)
+        # # create program:
+        # serializer = self.get_serializer(data=request.data)
+        # if not serializer.is_valid():
+        #     return Response('A program with the same name already exists', status.HTTP_400_BAD_REQUEST)
+        #
+        # # check if manager exist:
+        # programManager = ProgramManager.objects.filter(pk=request.data['programManager'])
+        # if len(programManager) == 0:
+        #     return Response('Invalid program manager supplied (not exist)', status.HTTP_404_NOT_FOUND)
+        #
+        # program = serializer.save()
+        #
+        # programManager_program = ProgramManagerAndProgram.objects.create(
+        #     program_id=ProgramNameSerializer(program, context=self.get_serializer_context()).data['program'],
+        #     programManager_id=request.data['programManager'])
+        # programManager_program.save()
+
+        # return Response(
+        #     content_type='successful open a program',
+        #     # status=status.HTTP_201_CREATED
+        # )
+#
 # /candidate/internshipsPriorities:
 # def set_internships_priorities_by_candidate(request):
 #     if request.method == 'POST':

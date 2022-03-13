@@ -83,8 +83,6 @@ class PostCreateProgram(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         # create program:
-        print("request.data: ", request.data)
-
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             return Response('A program with the same name already exists', status.HTTP_400_BAD_REQUEST)
@@ -106,46 +104,7 @@ class PostCreateProgram(generics.GenericAPIView):
             status=status.HTTP_201_CREATED
         )
 
-# @api_view(['POST'])
-# def post_create_new_program(request):
-#     # {
-#     #     "program": "string",
-#     #     "year": 0,
-#     #     "semester": "string",
-#     #     "prioritiesAmount": 0,
-#     #     "hoursRequired": 0,
-#     #     "depratment": "string",
-#     #     "programManager": "string"
-#     # }
-#
-#     if request.method == 'POST':
-#         print("request.data: ", request.data)
-#         serializer = self.get_serializer(data=request.data)
-#         if not serializer.is_valid():
-#             return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
-#         # serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-#
-#         companyRep_user = CompanyRepresentative.objects.create(
-#             user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'],
-#             companyName=request.data['companyName'])
-#         companyRep_user.save()
-#
-#         company_user = Company.objects.create(
-#             companyName=companyRep_user.companyName)
-#         company_user.save()
-#
-#         return Response(
-#             content_type='A new user has been added',
-#             status=status.HTTP_201_CREATED
-#         )
 
-
-# manager_list = ProgramManager.objects.values_list('user_id', flat=True).order_by('user_id')
-# manager_list = list(manager_list)
-# users = User.objects.filter(pk__in=manager_list)
-# manager = UserDetailsSerializer(users, many=True)
-# return JsonResponse(manager.data, safe=False)
 
 
 # get_detail_about_program(detail = 'hoursRequired')
