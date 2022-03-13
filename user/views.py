@@ -65,6 +65,7 @@ def get_program_managers(request):
 #     "userType": "string",
 #     "program": "string"
 # }
+
 def get_details_about_user_by_username(request, username):
     if request.method == 'GET':
         users = User.objects.all()
