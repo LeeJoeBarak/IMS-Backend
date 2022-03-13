@@ -15,12 +15,13 @@ class Internship(models.Model):
     # "requirements": "string",
     # "mentor": "string"
     internshipName = models.CharField(max_length=120, primary_key=True)
-    program = models.OneToOneField(Program, on_delete=models.CASCADE)
-    companyRepresentative = models.ForeignKey(CompanyRepresentative, on_delete=models.CASCADE, default='')
+    program = models.ForeignKey(Program, on_delete=models.CASCADE, default='')
+    # program = models.OneToOneField(Program, on_delete=models.CASCADE)
+    # companyRepresentative = models.ForeignKey(CompanyRepresentative, on_delete=models.CASCADE, default='')
     companyName = models.ForeignKey(Company, on_delete=models.CASCADE, default='')
     about = models.TextField(default="")
     requirements = models.TextField(default="")
-    mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
+    # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
     isAssign = models.BooleanField(default=False)
 
 

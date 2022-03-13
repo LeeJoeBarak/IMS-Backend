@@ -37,6 +37,8 @@ urlpatterns = [
     path('companies', user_views.get_companies_list),
     path('programManagers', user_views.get_program_managers),
     path('internships/<program>', internship_views.get_internships_by_program),
+    # path('companyRep/createInternship', internship_views.PostCreateInternshipByCompanyRep.as_view()),
+    path('programManager/createInternshipp', internship_views.PostCreateInternshipByProgramManager.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('admin/openProgram', program_views.PostCreateProgram.as_view()),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
