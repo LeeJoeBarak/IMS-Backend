@@ -12,7 +12,7 @@ class Student(models.Model):
     status = models.CharField(default=student_status[0],
                               max_length=100)
 
-    # student_status = ['candidate', 'advanced_candidate', 'intern']
+# student_status = ['student', 'advancedCandidate', 'intern']
     def __str__(self):
         return self.status
 

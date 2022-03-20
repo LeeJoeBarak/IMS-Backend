@@ -43,6 +43,12 @@ class ProgramSerializer(serializers.ModelSerializer):
         fields = ('program',)
 
 
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ('user_id', 'status')
+
+
 # Register Serializer:
 
 class RegisterSerializer(serializers.ModelSerializer):

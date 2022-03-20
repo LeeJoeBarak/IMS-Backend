@@ -25,6 +25,16 @@ class Internship(models.Model):
     isAssign = models.BooleanField(default=False)
 
 
+# class InternshipDetails(models.Model):
+#     internshipName = models.CharField(max_length=120, default='')
+#     program = models.ForeignKey(Program, on_delete=models.CASCADE, default='')
+#     companyName = models.ForeignKey(Company, on_delete=models.CASCADE, default='')
+#     about = models.TextField(default="")
+#     requirements = models.TextField(default="")
+#     # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
+#     isAssign = models.BooleanField(default=False)
+
+
 class Priority(models.Model):
     Student = models.ForeignKey(Student, on_delete=models.CASCADE)
     internship = models.ForeignKey(Internship, on_delete=models.CASCADE, default='')
@@ -34,6 +44,11 @@ class Priority(models.Model):
                                                           max_length=100)
     student_priority_number = models.PositiveIntegerField(default=1)
 
+
+# student_status_for_internship = {
+#     0: 'not accepted',
+#     1: 'accepted'
+# }
 
 class AssignmentIntern(models.Model):
     # {

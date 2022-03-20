@@ -35,18 +35,18 @@ urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
+    path('students/<program>', user_views.get_details_about_students_by_program),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
     path('programManagers', user_views.get_program_managers),
     path('internships/<program>', internship_views.get_internships_by_program),
     path('companyRep/createInternship', internship_views.PostCreateInternshipByCompanyRep.as_view()),
     path('programManager/createInternship', internship_views.PostCreateInternshipByProgramManager.as_view()),
+    # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('admin/openProgram', program_views.PostCreateProgram.as_view()),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
     path('activePrograms', program_views.get_active_program),
-    # path('candidate/internshipsPriorities', internship_views.set_internships_priorities_by_candidate),
-    # path('hoursRequired/<program>', program_views.get_detail_about_program)
-    # path('companyRep/createInternship', internships_views.create_internship)
+    path('candidate/internshipsPriorities', internship_views.PostInternshipsPrioritiesByCandidate.as_view()),
     # path('api/auth/', include('knox.urls')),
 
 

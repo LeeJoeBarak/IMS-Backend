@@ -23,7 +23,7 @@ from .models import Company, ProgramManager, Student, CompanyMentor, CompanyRepr
 from rest_framework.response import Response
 import help_fanctions
 
-from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer
+from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer
 
 
 # GET /companies
@@ -58,7 +58,7 @@ def get_program_managers(request):
         return JsonResponse(manager.data, safe=False)
 
 
-#GET /users/details/{username}:
+# GET /users/details/{username}:
 @api_view(['GET'])
 # {
 #     "firstName": "string",!!!
@@ -134,3 +134,58 @@ def get_details_about_user_by_username(request, username):
                 # "session": newToken,
                 "program": program_id
             })
+
+
+# /students/{program}
+# [
+#     {
+#         "firstName": "string",
+#         "lastName": "string",
+#         "email": "string",
+#         "company": "string",
+#         "internship": "string",
+#         "hours": 0,
+#         "status": "string"
+#     }
+# ]
+@api_view(['GET'])
+def get_details_about_students_by_program(request, program):
+    if request.method == 'GET':
+        details = []
+        student_and_program = StudentAndProgram.objects.all()
+        student_and_program = student_and_program.filter(program_id=program)
+        # print("1. student_and_program: ", student_and_program)
+        student_and_program_serializer = StudentAndProgramSerializers(student_and_program, many=True)
+        student_and_program_serializer = list(student_and_program_serializer.data)
+        # print("2. student_and_program_serializer: ", student_and_program_serializer)
+        for student in student_and_program_serializer:
+            student_id = student['student_id']
+            program_id = student['program_id']
+            users = User.objects.all()
+            user = users.filter(id=student_id)
+            # print(user)
+            user_serializer = UserSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            # print("user_serializer: ", user_serializer)
+            first_name = user_serializer['first_name']
+            last_name = user_serializer['last_name']
+            email = user_serializer['email']
+            students = Student.objects.all()
+            student = students.filter(user_id=student_id)
+            student_serializer = StudentSerializer(student, many=True)
+            student_serializer = list(student_serializer.data)
+            student_serializer = student_serializer[0]
+            status = student_serializer['status']
+            student_detail = {
+                        "firstName": first_name,
+                        "lastName": last_name,
+                        "email": email,
+                        "company": "empty-not implement",
+                        "internship": "empty-not implement",
+                        "hours": 0,
+                        "status": status
+                }
+            details.append(student_detail)
+
+        return Response(details)
