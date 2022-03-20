@@ -1,23 +1,24 @@
-import tables
-from django.contrib.sessions.backends import db
+# import tables
+# from django.contrib.sessions.backends import db
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import render
+# from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
 from rest_framework import status
-
+from django.contrib.auth.models import User
 from program.models import Program
-from user.models import Company
+from user.models import Company, CompanyRepresentative
+from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer
 from .serializers import InternshipsSerializer, CreateInternshipSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
-from .models import Internship
+from .models import Internship, Priority
 from rest_framework.response import Response
-from knox.models import AuthToken
+# from knox.models import AuthToken
 
 import help_fanctions
-from rest_framework import generics, permissions
+from rest_framework import generics
 
 
 class InternshipsView(viewsets.ModelViewSet):
@@ -85,6 +86,39 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
 
 
+# class PostCreateInternshipDetailsByProgramManager(generics.GenericAPIView):
+#     authentication_classes = []
+#     permission_classes = []
+#     serializer_class = CreateInternshipSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         # create internship:
+#         # print('1. request.data: ',request.data)
+#         program = Program.objects.filter(pk=request.data['program'])
+#         # print('2. program: ', program[0])
+#         company = Company.objects.filter(pk=request.data['company'])
+#         # print('3. company: ', company[0])
+#         internshipName = InternshipDetails.objects.filter(pk=request.data['internshipName'])
+#         # print('4. internshipName: ', internshipName)
+#         if program is None or company is None or len(internshipName) != 0:
+#             return Response('Invalid program / company / internship name supplied already exists',
+#                             status.HTTP_400_BAD_REQUEST)
+#
+#         program_id = program[0]
+#         companyName_id = company[0]
+#         internship = InternshipDetails.objects.create(
+#             program=program_id,
+#             internshipName=request.data['internshipName'],
+#             companyName=companyName_id,
+#             about=request.data['about'],
+#             requirements=request.data['requirements']
+#         )
+#         # print('5. internship: ', internship)
+#
+#         return Response(
+#             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
+
+
 # POST /companyRep/createInternship
 class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
     authentication_classes = []
@@ -92,15 +126,42 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
     serializer_class = CreateInternshipSerializer
 
     def post(self, request, *args, **kwargs):
+        # obj = AuthToken.objects.get(token_key=request.data['Authorization'])
+        # print(obj)
+        users = User.objects.all()
+        user = users.filter(username=request.data['username'])
+        # print("1. user: ", user)
+        user_serializer = UserDetailsSerializer(user, many=True)
+        user_serializer = list(user_serializer.data)
+        user_serializer = user_serializer[0]
+        # print("user_serializer: ", user_serializer)
+        user_id = user_serializer['id']
+        # print("22. user_serializer: ", user_serializer['id'])
+
+        companyRepresentative = CompanyRepresentative.objects.all()
+        companyRepresentative = companyRepresentative.filter(user_id=user_id)
+        # companyRepresentative_s = CompanyRepresentative.objects.filter(user_id=user_id).first()
+        companyRepresentative = CompanyRepresentativeSerializer(companyRepresentative, many=True)
+        companyRepresentative = list(companyRepresentative.data)
+        companyRepresentative = companyRepresentative[0]
+
+        # print("companyRepresentative: ", companyRepresentative)
+        company = companyRepresentative['companyName']
+        # print("2. company: ", company)
         # create internship:
-        # print('1. request.data: ',request.data)
-        program = Program.objects.filter(pk=request.data['program'])
-        # print('2. program: ', program[0])
-        company = Company.objects.filter(pk=request.data['company'])
-        # print('3. company: ', company[0])
-        internshipName = Internship.objects.filter(pk=request.data['internshipName'])
-        # print('4. internshipName: ', internshipName)
-        if program is None or company is None or len(internshipName) != 0:
+        # print('3. request.data: ', request.data)
+        try:
+            program = Program.objects.filter(pk=request.data['program'])
+            # print('4. program: ', program[0])
+            company = Company.objects.filter(pk=company)
+            # print('5. company: ', company[0])
+            internshipName = Internship.objects.filter(pk=request.data['internshipName'])
+            # print('4. internshipName: ', internshipName)
+        except:
+            return Response('Invalid program / company / internship name supplied already exists',
+                            status.HTTP_400_BAD_REQUEST)
+
+        if len(program) == 0 or len(company) == 0 or len(internshipName) != 0:
             return Response('Invalid program / company / internship name supplied already exists',
                             status.HTTP_400_BAD_REQUEST)
 
@@ -118,84 +179,58 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
         return Response(
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
 
-        # POST /companyRep/createInternship
-        # {
-        #     "program": "string",
-        #     "internshipName": "string",
-        #     "about": "string",
-        #     "requirements": "string"
-        # }
-        # class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
-        #     # authentication_classes = []
-        #     # permission_classes = []
-        #     # serializer_class = CreateProgramSerializer
-        #
-        #     def post(self, request, *args, **kwargs):
-        #         # id = "SELECT user_id from main.knox_authtoken where token_key = '7bdcac92'"
-        #         # # print(': ', companyRep/createInternship)
-        #         lToken = '7bdcac92'
-        #         q = AuthToken.objects.raw('SELECT user_id from main.knox_authtoken where token_key = %s', [lToken])
-        #         print('q: ', q)
-        # # create program:
-        # serializer = self.get_serializer(data=request.data)
-        # if not serializer.is_valid():
-        #     return Response('A program with the same name already exists', status.HTTP_400_BAD_REQUEST)
-        #
-        # # check if manager exist:
-        # programManager = ProgramManager.objects.filter(pk=request.data['programManager'])
-        # if len(programManager) == 0:
-        #     return Response('Invalid program manager supplied (not exist)', status.HTTP_404_NOT_FOUND)
-        #
-        # program = serializer.save()
-        #
-        # programManager_program = ProgramManagerAndProgram.objects.create(
-        #     program_id=ProgramNameSerializer(program, context=self.get_serializer_context()).data['program'],
-        #     programManager_id=request.data['programManager'])
-        # programManager_program.save()
 
-        # return Response(
-        #     content_type='successful open a program',
-        #     # status=status.HTTP_201_CREATED
-        # )
-#
-# /candidate/internshipsPriorities:
-# def set_internships_priorities_by_candidate(request):
-#     if request.method == 'POST':
-#         serializer = InternshipsPrioritiesByCandidateSerializer(data=request.data)
-#
-#         if serializer.is_valid():
-#             print(serializer.data)
-#             # serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# def create_internship(request):
-#     """company representative creates an internship offered by his company"""
-#     #todo validate that the internship doesn't exist in system already
-#     if request.method == "POST":
-#         companyRepresentative_id = request.POST.get('username')
-#         companyName = request.POST.get('companyName')
-#         internshipName = request.POST.get('internshipName')
-#         about = request.POST.get('about')
-#         requirements = request.POST.get('requirments') #DON'T fix the typo (i.e. don't add 'e' after 'r')
-#         mentor = request.POST.get('mentor')
-#
-#         #todo Validate username. If wrong username -> return 401 invalid username
-#
-#         data = {
-#             companyRepresentative= companyRepresentative,
-#             'companyName': companyName,
-#             'internshipName': internshipName,
-#             'about': about,
-#             'requirements': requirments,
-#             'mentor': mentor
-#             'program': program
+# POST /candidate/internshipsPriorities:
+# {
+#     "username": "string",
+#     "priorities": [
+#         {
+#             "internshipName": "string",
+#             "companyName": "string"
 #         }
-#
-#         db, client = utils.get_db_handle()
-#         internshipsColl = utils.get_collection_handle(db, "Internships")
-#         res = internshipsColl.insert_one(data)
-#         print("successful insert")
-#         print(res.inserted_id)
-#         return HttpResponse(200, 'internship created successfully')
-#     return HttpResponse("request method wasn't POST")
+#     ]
+# }
+class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = CreateInternshipSerializer
+
+    def post(self, request, *args, **kwargs):
+        internshipName_array = []
+
+        try:
+            users = User.objects.all()
+            user = users.filter(username=request.data['username'])
+            # print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            Student_id = user_serializer['id']
+            # print('1. Student_id: ', Student_id)
+            for internship in request.data['priorities']:
+                # print('internship: ', internship['internshipName'])
+                internship_obj = Internship.objects.all()
+                internship_obj = internship_obj.filter(internshipName=internship['internshipName'])
+                internship_serializer = InternshipsSerializer(internship_obj, many=True)
+                internship_serializer = list(internship_serializer.data)
+                internship_serializer = internship_serializer[0]
+                internship_id = internship_serializer['internshipName']
+                # internship_obj = Internship.objects.filter(internshipName=internship['internshipName'])
+                # print('2. internship_obj: ', internship_obj)
+                # internship_serializer = InternshipsSerializer(internship_obj, many=True)
+                # internship_serializer = internship_serializer[0]
+                # internship_id = internship_serializer[0]
+                internshipName_array.append(internship_id)
+                # print('3. internship_id: ', internship_id)
+
+        except:
+            return Response('Invalid username supplied (not exist)', status.HTTP_400_BAD_REQUEST)
+
+        for i, val in enumerate(internshipName_array):
+            priority = Priority.objects.create(
+                internship_id=val,
+                Student_id=Student_id,
+                student_priority_number=i+1,
+            )
+
+        return Response(content_type='successful saved priorities', status=status.HTTP_200_OK)

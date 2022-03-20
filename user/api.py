@@ -260,6 +260,7 @@ class LogoutAPI(generics.GenericAPIView):
     def post(self, request, format=None):
 
         # auth_token.delete()
+        # print("request.data['Authorization']: ", request.data['Authorization'])
         obj = AuthToken.objects.get(token_key=request.data['Authorization'])
         # print("AuthToken.objects.get(token_key=): ", obj)
         obj.delete()
