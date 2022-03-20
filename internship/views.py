@@ -208,23 +208,29 @@ class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
             Student_id = user_serializer['id']
             # print('1. Student_id: ', Student_id)
             for internship in request.data['priorities']:
-                internship_obj = Internship.objects.filter(pk=internship['internshipName'])
-                print('internship_obj: ', internship_obj)
+                # print('internship: ', internship['internshipName'])
+                internship_obj = Internship.objects.all()
+                internship_obj = internship_obj.filter(internshipName=internship['internshipName'])
                 internship_serializer = InternshipsSerializer(internship_obj, many=True)
+                internship_serializer = list(internship_serializer.data)
                 internship_serializer = internship_serializer[0]
-                internship_id = internship_serializer[0]
+                internship_id = internship_serializer['internshipName']
+                # internship_obj = Internship.objects.filter(internshipName=internship['internshipName'])
+                # print('2. internship_obj: ', internship_obj)
+                # internship_serializer = InternshipsSerializer(internship_obj, many=True)
+                # internship_serializer = internship_serializer[0]
+                # internship_id = internship_serializer[0]
                 internshipName_array.append(internship_id)
-                print('2. internship_id: ', internship_id)
+                # print('3. internship_id: ', internship_id)
 
         except:
             return Response('Invalid username supplied (not exist)', status.HTTP_400_BAD_REQUEST)
 
         for i, val in enumerate(internshipName_array):
             priority = Priority.objects.create(
-                internship_id=internship_id,
+                internship_id=val,
                 Student_id=Student_id,
-                student_priority_number=request.data['internshipName'],
+                student_priority_number=i+1,
             )
 
-        return Response(
-            content_type='successful saved priorities', status=status.HTTP_201_CREATED)
+        return Response(content_type='successful saved priorities', status=status.HTTP_200_OK)
