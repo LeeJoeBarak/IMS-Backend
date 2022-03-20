@@ -1,15 +1,15 @@
 # import tables
-from django.shortcuts import render
-from django.contrib.sessions.backends import db
+# from django.shortcuts import render
+# from django.contrib.sessions.backends import db
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+# from django.shortcuts import render
+# from django.shortcuts import get_object_or_404
+# from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework import status
+# from rest_framework.views import APIView
+# from rest_framework import status
 from django.contrib.auth.models import User
-from django.contrib.auth.signals import user_logged_in, user_logged_out
+# from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 from program.models import StudentAndProgram, CompanyMentorAndProgram, CompanyRepresentativeAndProgram, \
     ProgramManagerAndProgram, ProgramCoordinatorAndProgram
@@ -21,7 +21,7 @@ from .models import Company, ProgramManager, Student, CompanyMentor, CompanyRepr
 # from .serializer import CompanyRepresentativeSerializer
 
 from rest_framework.response import Response
-import help_fanctions
+# import help_fanctions
 
 from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer
 

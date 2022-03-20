@@ -1,11 +1,11 @@
-import tables
-from django.contrib.sessions.backends import db
+# import tables
+# from django.contrib.sessions.backends import db
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import render
+# from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
 from rest_framework import status
 from django.contrib.auth.models import User
 from program.models import Program
@@ -15,10 +15,10 @@ from .serializers import InternshipsSerializer, CreateInternshipSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
 from .models import Internship, Priority
 from rest_framework.response import Response
-from knox.models import AuthToken
+# from knox.models import AuthToken
 
 import help_fanctions
-from rest_framework import generics, permissions
+from rest_framework import generics
 
 
 class InternshipsView(viewsets.ModelViewSet):
