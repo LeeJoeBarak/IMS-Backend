@@ -3,7 +3,8 @@ import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
-student_status = ['student', 'advancedCandidate', 'intern']
+student_status = ['סטודנט', 'מועמד מתקדם', 'מתמחה']
+# student_status = ['student', 'advancedCandidate', 'intern']
 
 student_status_for_internship = {
     0: 'not accepted',
