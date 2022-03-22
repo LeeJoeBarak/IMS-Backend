@@ -21,11 +21,10 @@ index_file_path = os.path.join(BASE_DIR, 'build', 'index.html')
 def react(request):
     # return render(request, index_file_path)
     try:
-        print(index_file_path)
         with open(index_file_path) as f:
             return HttpResponse(f.read())
     except FileNotFoundError:
-        print('error!!')
+        print('error loading react!')
 
 router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
