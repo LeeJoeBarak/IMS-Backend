@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view
 # from rest_framework import status
 from django.contrib.auth.models import User
 # from django.contrib.auth.signals import user_logged_in, user_logged_out
-
+from help_fanctions import student_status
 from program.models import StudentAndProgram, CompanyMentorAndProgram, CompanyRepresentativeAndProgram, \
     ProgramManagerAndProgram, ProgramCoordinatorAndProgram
 from program.serializers import StudentAndProgramSerializers, CompanyMentorAndProgramSerializers, \
@@ -177,14 +177,22 @@ def get_details_about_students_by_program(request, program):
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
             status = student_serializer['status']
-            student_detail = {
-                        "firstName": first_name,
-                        "lastName": last_name,
-                        "email": email,
-                        "company": "empty-not implement",
-                        "internship": "empty-not implement",
-                        "hours": 0,
-                        "status": status
+            if status == student_status[2]:
+                student_detail = {
+                            "firstName": first_name,
+                            "lastName": last_name,
+                            "email": email,
+                            "company": "empty-not implement",
+                            "internship": "empty-not implement",
+                            "hours": 0,
+                            "status": status
+                    }
+            else:
+                student_detail = {
+                    "firstName": first_name,
+                    "lastName": last_name,
+                    "email": email,
+                    "status": status
                 }
             details.append(student_detail)
 
