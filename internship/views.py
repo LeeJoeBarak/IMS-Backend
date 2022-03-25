@@ -113,6 +113,7 @@ def get_nominees(request, program, companyName, internshipName):
         return JsonResponse(student_details, safe=False)
 
 
+
 # POST /programManager/createInternship:
 # {
 #     "program": "string",
