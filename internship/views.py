@@ -14,11 +14,11 @@ from program.models import Program, StudentAndProgram
 from program.serializers import ProgramNameSerializer, StudentAndProgramSerializers
 from user.models import Company, CompanyRepresentative, Student
 from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer, CompanySerializer, \
-     UserSerializer, StudentSerializer
+    UserSerializer, StudentSerializer
 from .serializers import InternshipsSerializer, CreateInternshipSerializer, InternshipIdSerializer, \
     InternshipsPrioritiesByCandidateSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
-from .models import Priority, InternshipDetails
+from .models import Priority, InternshipDetails, AssignmentIntern
 from rest_framework.response import Response
 # from knox.models import AuthToken
 
@@ -111,7 +111,6 @@ def get_nominees(request, program, companyName, internshipName):
             }
             student_details.append(student_detail)
         return JsonResponse(student_details, safe=False)
-
 
 
 # POST /programManager/createInternship:
@@ -279,3 +278,69 @@ class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
             )
 
         return Response(content_type='successful saved priorities', status=status.HTTP_200_OK)
+
+
+# POST /assignIntern:
+# {
+#     "companyName": "string",
+#     "internshipName": "string",
+#     "username": "string"
+# }
+
+class AssignInternToInternship(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        users = User.objects.all()
+        user = users.filter(username=request.data['username'])
+        if not user.exists():
+            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
+        # print("1. user: ", user)
+        user_serializer = UserDetailsSerializer(user, many=True)
+        user_serializer = list(user_serializer.data)
+        user_serializer = user_serializer[0]
+        Student_id = user_serializer['id']
+        # print('2. Student_id: ', Student_id)
+        program = StudentAndProgram.objects.filter(student_id=Student_id)
+        if not program.exists():
+            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
+        program_serializer = StudentAndProgramSerializers(program, many=True)
+        program_serializer = list(program_serializer.data)
+        program_serializer = program_serializer[0]
+        program_id = program_serializer['program_id']
+        # print('3. program_id: ', program_id)
+        internship_obj = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
+                                                          program_id=program_id,
+                                                          companyName_id=request.data['companyName'])
+        if not internship_obj.exists():
+            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
+        internship_serializer = InternshipIdSerializer(internship_obj, many=True)
+        # print('5. internship_serializer: ', internship_serializer.data)
+        internship_serializer = list(internship_serializer.data)
+        # print('6. internship_serializer: ', internship_serializer)
+        internship_serializer = internship_serializer[0]
+        # print('7. internship_serializer: ', internship_serializer)
+        internship_id = internship_serializer['id']
+
+        # Assign intern:
+        assignIntern = AssignmentIntern.objects.create(
+            student_id=Student_id,
+            internship_id=internship_id,
+        )
+
+        # update student status:
+        student = Student.objects.get(user_id=Student_id)
+        student.status = help_fanctions.student_status[2]
+        student.save()
+
+        # update internship isAssign:
+        internship = InternshipDetails.objects.get(id=internship_id)
+        # print('7. internship: ', internship)
+        # print('6. internship.isAssign: ', internship.isAssign)
+        internship.isAssign = True
+        # print('7. After internship.isAssign: ', internship.isAssign)
+        internship.save()
+
+        return Response(
+            content_type='successful set the student to the intern', status=status.HTTP_201_CREATED)
