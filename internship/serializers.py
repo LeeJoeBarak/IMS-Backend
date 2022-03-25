@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
 import internship
-from .models import Internship
+from .models import InternshipDetails, Priority
 
 
 class InternshipsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Internship
+        model = InternshipDetails
         fields = ('program', 'companyName', 'internshipName', 'about', 'requirements')
 
         # "companyName": "string",
@@ -15,20 +15,22 @@ class InternshipsSerializer(serializers.ModelSerializer):
         # "requirments": "string"
 
 
+class InternshipIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InternshipDetails
+        fields = ('id', 'internshipName')
+
+
 class CreateInternshipSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Internship
-        fields = ('program_id', 'internshipName', 'companyName_id', 'about', 'requirements')
+        model = InternshipDetails
+        fields = ('id', 'program_id', 'internshipName', 'companyName_id', 'about', 'requirements', 'quantity')
 
-        # def create(self, validated_data):
-        #     internship = Internship.objects.create(
-        #         internshipName=validated_data['internshipName'],
-        #         program_id=validated_data['program'],
-        #         companyName_id=validated_data['company'],
-        #         about=validated_data['about'],
-        #         requirements=validated_data['requirements']
-        #     )
-        #     return internship
+# class CreateInternshipSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = InternshipDetails
+#         fields = ('program_id', 'internshipName', 'companyName_id', 'about', 'requirements')
+
 
 # "username": "string",
 # "companyName": "string",
@@ -37,7 +39,7 @@ class CreateInternshipSerializer(serializers.ModelSerializer):
 # "requirments": "string",
 # "mentor": "string"
 
-# class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Priority
-#         fields = ('Student', 'internship')
+class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Priority
+        fields = ('Student_id', 'student_priority_number', 'internship_id')

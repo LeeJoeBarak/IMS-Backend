@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Internship
-from .models import Internship
+# from .models import Internship
+from .models import InternshipDetails
+
 # from .models import Internship, HoursReport, AssignmentIntern, Priority
 
 # class InternshipsAdmin(admin.ModelAdmin):
@@ -9,7 +10,7 @@ from .models import Internship
 
 # Register your models here.
 
-admin.site.register(Internship)
+admin.site.register(InternshipDetails)
 # admin.site.register(AssignmentIntern)
 # admin.site.register(HoursReport)
 # admin.site.register(Priority)

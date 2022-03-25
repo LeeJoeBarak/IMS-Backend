@@ -68,7 +68,8 @@ def get_active_program(request):
         # print("program_serializer.data: ",program_serializer.data)
         # # amount = list(program_serializer.data)
         # # amount = amount[0]
-        program_list = Program.objects.values_list('program', flat=True).order_by('program')
+        program_list = Program.objects.values_list('program', flat=True).order_by('program').filter(status='True')
+        # program = Program.objects.filter(program=request.data['program'], status='True')
         program_list = list(program_list)
         # print("program_list:", program_list)
         # return JsonResponse(program_serializer.data, safe=False)
