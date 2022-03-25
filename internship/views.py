@@ -324,6 +324,9 @@ class AssignInternToInternship(generics.GenericAPIView):
         internship_id = internship_serializer['id']
 
         # Assign intern:
+        assignIntern = AssignmentIntern.objects.filter(student_id=Student_id, internship_id=internship_id,)
+        if assignIntern.exists():
+            return Response('The assignment intern already exist', status=HTTP_404_NOT_FOUND)
         assignIntern = AssignmentIntern.objects.create(
             student_id=Student_id,
             internship_id=internship_id,
