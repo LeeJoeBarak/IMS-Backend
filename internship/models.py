@@ -4,25 +4,25 @@ from django.db import models
 
 from help_fanctions import intern_status_approved_hours_by_mentor, student_status_for_internship
 from program.models import Program
-from user.models import Company, CompanyRepresentative, CompanyMentor, Student
+from user.models import Company, CompanyMentor, Student
 
 
-class Internship(models.Model):
-    # todo: "username": "string",?????
-    # "companyName": "string",
-    # "internshipName": "string",
-    # "about": "string",
-    # "requirements": "string",
-    # "mentor": "string"
-    internshipName = models.CharField(max_length=120, primary_key=True)
-    program = models.ForeignKey(Program, on_delete=models.CASCADE, default='')
-    # program = models.OneToOneField(Program, on_delete=models.CASCADE)
-    # companyRepresentative = models.ForeignKey(CompanyRepresentative, on_delete=models.CASCADE, default='')
-    companyName = models.ForeignKey(Company, on_delete=models.CASCADE, default='')
-    about = models.TextField(default="")
-    requirements = models.TextField(default="")
-    # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
-    isAssign = models.BooleanField(default=False)
+# class Internship(models.Model):
+#     # todo: "username": "string",?????
+#     # "companyName": "string",
+#     # "internshipName": "string",
+#     # "about": "string",
+#     # "requirements": "string",
+#     # "mentor": "string"
+#     internshipName = models.CharField(max_length=120, primary_key=True)
+#     program = models.ForeignKey(Program, on_delete=models.CASCADE, default='')
+#     # program = models.OneToOneField(Program, on_delete=models.CASCADE)
+#     # companyRepresentative = models.ForeignKey(CompanyRepresentative, on_delete=models.CASCADE, default='')
+#     companyName = models.ForeignKey(Company, on_delete=models.CASCADE, default='')
+#     about = models.TextField(default="")
+#     requirements = models.TextField(default="")
+#     # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
+#     isAssign = models.BooleanField(default=False)
 
 
 class InternshipDetails(models.Model):
@@ -33,11 +33,12 @@ class InternshipDetails(models.Model):
     requirements = models.TextField(default="")
     # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
     isAssign = models.BooleanField(default=False)
+    quantity = models.PositiveIntegerField(default=1)
 
 
 class Priority(models.Model):
     Student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    internship = models.ForeignKey(Internship, on_delete=models.CASCADE, default='')
+    internship = models.ForeignKey(InternshipDetails, on_delete=models.CASCADE, default='')
     status_decision_by_company = models.CharField(default=student_status_for_internship[0],
                                                   max_length=100)
     status_decision_by_program_manager = models.CharField(default=student_status_for_internship[0],
@@ -58,7 +59,7 @@ class AssignmentIntern(models.Model):
     #     "studentsName": "string"
     # }
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    internship = models.ForeignKey(Internship, on_delete=models.CASCADE, default='')
+    internship = models.ForeignKey(InternshipDetails, on_delete=models.CASCADE, default='')
 
 
 class HoursReport(models.Model):

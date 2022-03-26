@@ -128,6 +128,7 @@
       <option name="ignoredErrors">
         <list>
           <option value="N806" />
+          <option value="N803" />
         </list>
       </option>
     </inspection_tool>
@@ -138,6 +139,10 @@
           <option value="user.models.ProgramManager.objects" />
           <option value="user.models.Student.objects" />
           <option value="program.models.StudentAndProgram.objects" />
+          <option value="internship.models.InternshipDetails.objects" />
+          <option value="program.models.Program.*" />
+          <option value="user.models.CompanyRepresentative.*" />
+          <option value="internship.models.Priority.*" />
         </list>
       </option>
     </inspection_tool>
