@@ -16,9 +16,9 @@ from user.models import Company, CompanyRepresentative, Student
 from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer, CompanySerializer, \
     UserSerializer, StudentSerializer
 from .serializers import InternshipsSerializer, CreateInternshipSerializer, InternshipIdSerializer, \
-    InternshipsPrioritiesByCandidateSerializer
+    InternshipsPrioritiesByCandidateSerializer, HoursReportSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
-from .models import Priority, InternshipDetails, AssignmentIntern
+from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport
 from rest_framework.response import Response
 # from knox.models import AuthToken
 
@@ -101,16 +101,56 @@ def get_nominees(request, program, companyName, internshipName):
             student_serializer = StudentSerializer(student, many=True)
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
-            student_status = student_serializer['status']
-            # print('D. status: ', status)
-            student_detail = {
-                "username": username,
-                "firstName": firstName,
-                "lastName": lastName,
-                "status": student_status
-            }
-            student_details.append(student_detail)
+            if student_serializer["status"] == help_fanctions.student_status[1]:
+                student_detail = {
+                    "username": username,
+                    "firstName": firstName,
+                    "lastName": lastName,
+                }
+                student_details.append(student_detail)
         return JsonResponse(student_details, safe=False)
+
+
+# GET /intern/getHours/{username}:
+# [
+#     {
+#         "date": "string",
+#         "startTime": "string",
+#         "endTime": "string",
+#         "approved": true
+#     }
+# ]
+@api_view(['GET'])
+def get_intern_hours(request, username):
+    if request.method == 'GET':
+        hours_details = []
+        try:
+            users = User.objects.all()
+            user = users.filter(username=username)
+            # if not user.exists():
+            #     return Response('User not found - user', status=status.HTTP_404_NOT_FOUND)
+            # print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            Student_id = user_serializer['id']
+            # check if the user is a student:
+            student = Student.objects.get(user_id=Student_id)
+            # print("2. student: ", student)
+        except:
+            return Response('User not found', status=status.HTTP_404_NOT_FOUND)
+        hours = HoursReport.objects.filter(student_id=Student_id)
+        hours_serializer = HoursReportSerializer(hours, many=True)
+        hours_serializer = list(hours_serializer.data)
+        for hour in hours_serializer:
+            hour_details = {
+                "date": hour['date'],
+                "startTime": hour['startTime'],
+                "endTime": hour['endTime'],
+                "approved": hour['approved']
+            }
+            hours_details.append(hour_details)
+        return JsonResponse(hours_details, safe=False)
 
 
 # POST /programManager/createInternship:
@@ -324,7 +364,7 @@ class AssignInternToInternship(generics.GenericAPIView):
         internship_id = internship_serializer['id']
 
         # Assign intern:
-        assignIntern = AssignmentIntern.objects.filter(student_id=Student_id, internship_id=internship_id,)
+        assignIntern = AssignmentIntern.objects.filter(student_id=Student_id, internship_id=internship_id, )
         if assignIntern.exists():
             return Response('The assignment intern already exist', status=HTTP_404_NOT_FOUND)
         assignIntern = AssignmentIntern.objects.create(
@@ -347,3 +387,61 @@ class AssignInternToInternship(generics.GenericAPIView):
 
         return Response(
             content_type='successful set the student to the intern', status=status.HTTP_201_CREATED)
+
+
+# POST /intern/hoursReport:
+# {
+#     "username": "string",
+#     "hours": [
+#         {
+#             "date": "string",
+#             "startTime": "string",
+#             "endTime": "string"
+#         }
+#     ]
+# }
+class HoursReportByIntern(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        # print("request.data: ", request.data)
+        # get student id:
+        try:
+            users = User.objects.all()
+            user = users.filter(username=request.data['username'])
+            if not user.exists():
+                return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
+            # print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            Student_id = user_serializer['id']
+            # check if the user is a student:
+            student = Student.objects.get(user_id=Student_id)
+        except:
+            return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
+        # print('2. Student_id: ', Student_id)
+        # print('3. hours:' , request.data['hours'])
+        # Report hour:
+        for hour in request.data['hours']:
+            l_hour = dict(hour)
+            # print('3. hours:' , request.data['hours'])
+            checkHoursReport = HoursReport.objects.filter(student_id=Student_id, date=l_hour['date'],
+                                                          startTime=l_hour['startTime'],
+                                                          endTime=l_hour['endTime'])
+            if checkHoursReport.exists():
+                continue
+            hoursReport = HoursReport.objects.create(
+                student_id=Student_id,
+                date=l_hour['date'],
+                startTime=l_hour['startTime'],
+                endTime=l_hour['endTime']
+            )
+            # print('A. date: ', l_hour['date'])
+            # print('B. startTime: ', l_hour['startTime'])
+            # print('C. endTime: ', l_hour['endTime'])
+            # print("3. hoursReport: ", hoursReport)
+
+        return Response(
+            content_type='successful add the hours', status=status.HTTP_200_OK)

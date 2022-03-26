@@ -74,10 +74,16 @@ class HoursReport(models.Model):
     #     ]
     # }
 
-    internship = models.ForeignKey(AssignmentIntern, on_delete=models.CASCADE, default='')
+    # internship = models.ForeignKey(AssignmentIntern, on_delete=models.CASCADE, default='')
+    # student = models.ForeignKey(Student, on_delete=models.CASCADE, default='')
+    # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
+    # date = models.CharField(max_length=20, default='1.1.2020')
+    # startTime = models.CharField(max_length=20, default='08:00:00')
+    # endTime = models.CharField(max_length=20, default='20:00:00')
+    # status = models.CharField(default=intern_status_approved_hours_by_mentor[0], max_length=100)
+
     student = models.ForeignKey(Student, on_delete=models.CASCADE, default='')
-    mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
     date = models.CharField(max_length=20, default='1.1.2020')
     startTime = models.CharField(max_length=20, default='08:00:00')
     endTime = models.CharField(max_length=20, default='20:00:00')
-    status = models.CharField(default=intern_status_approved_hours_by_mentor[0], max_length=100)
+    approved = models.BooleanField(default=False)
