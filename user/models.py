@@ -45,14 +45,14 @@ class ProgramManager(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "מנהל תוכנית"
+        return "מנהל תוכנית התמחות"
 
 
 class ProgramCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "רכז תוכנית"
+        return "רכז תוכנית התמחות"
 
 
 class SystemManager(models.Model):
