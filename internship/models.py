@@ -63,8 +63,8 @@ class AssignmentIntern(models.Model):
 
 
 class HoursReport(models.Model):
+    # {
     #     "username": "string",
-    #     "Intern": "string",
     #     "hours": [
     #         {
     #             "date": "string",
@@ -72,10 +72,11 @@ class HoursReport(models.Model):
     #             "endTime": "string"
     #         }
     #     ]
+    # }
 
     internship = models.ForeignKey(AssignmentIntern, on_delete=models.CASCADE, default='')
-    student = models.OneToOneField(Student, on_delete=models.CASCADE, default='')
-    mentor = models.OneToOneField(CompanyMentor, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, default='')
+    mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
     date = models.CharField(max_length=20, default='1.1.2020')
     startTime = models.CharField(max_length=20, default='08:00:00')
     endTime = models.CharField(max_length=20, default='20:00:00')
