@@ -7,13 +7,13 @@ student_status = ['סטודנט', 'מועמד מתקדם', 'מתמחה']
 # student_status = ['student', 'advancedCandidate', 'intern']
 
 student_status_for_internship = {
-    0: 'not accepted',
-    1: 'accepted'
+    0: 'false',
+    1: 'true'
 }
 
 intern_status_approved_hours_by_mentor = {
-    0: 'not approved',
-    1: 'approved'
+    0: 'false',
+    1: 'true'
 }
 
 def remove_info_from_serializer(list_of_obg, serializer):

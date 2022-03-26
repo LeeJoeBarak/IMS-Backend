@@ -43,7 +43,8 @@ class CreateInternshipSerializer(serializers.ModelSerializer):
 class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Priority
-        fields = ('Student_id', 'student_priority_number', 'internship_id')
+        fields = ('Student_id', 'student_priority_number', 'internship_id', 'status_decision_by_company',
+                  'status_decision_by_program_manager')
 
 
 # HoursReport
