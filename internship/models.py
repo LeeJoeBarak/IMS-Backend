@@ -46,11 +46,6 @@ class Priority(models.Model):
     student_priority_number = models.PositiveIntegerField(default=1)
 
 
-# student_status_for_internship = {
-#     0: 'not accepted',
-#     1: 'accepted'
-# }
-
 class AssignmentIntern(models.Model):
     # {
     #     "username": "string",
@@ -88,3 +83,8 @@ class HoursReport(models.Model):
     endTime = models.CharField(max_length=20, default='20:00:00')
     approved = models.BooleanField(default=False)
     totalTime = models.FloatField(default=0.0)
+
+
+class InternshipAndMentor(models.Model):
+    mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
+    internship = models.ForeignKey(InternshipDetails, on_delete=models.CASCADE, default='')
