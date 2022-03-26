@@ -4,13 +4,15 @@
 from django.http import JsonResponse
 # from django.shortcuts import render
 # from django.shortcuts import get_object_or_404
-# from rest_framework import viewsets
 from rest_framework.decorators import api_view
 # from rest_framework.views import APIView
 # from rest_framework import status
 from django.contrib.auth.models import User
 # from django.contrib.auth.signals import user_logged_in, user_logged_out
 from help_fanctions import student_status
+from internship.models import AssignmentIntern, InternshipDetails, HoursReport
+from internship.serializers import AssignmentInternSerializer, InternshipsSerializer, \
+    HoursReportTotalTimeSerializer
 from program.models import StudentAndProgram, CompanyMentorAndProgram, CompanyRepresentativeAndProgram, \
     ProgramManagerAndProgram, ProgramCoordinatorAndProgram
 from program.serializers import StudentAndProgramSerializers, CompanyMentorAndProgramSerializers, \
@@ -18,10 +20,8 @@ from program.serializers import StudentAndProgramSerializers, CompanyMentorAndPr
     ProgramCoordinatorAndProgramSerializers
 from .models import Company, ProgramManager, Student, CompanyMentor, CompanyRepresentative, ProgramCoordinator, \
     SystemManager
-# from .serializer import CompanyRepresentativeSerializer
 
 from rest_framework.response import Response
-# import help_fanctions
 
 from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer
 
@@ -177,16 +177,41 @@ def get_details_about_students_by_program(request, program):
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
             status = student_serializer['status']
+            # print("1. student_id: ", student_id)
+
             if status == student_status[2]:
+                internship = AssignmentIntern.objects.filter(student_id=student_id)
+                internship_serializer = AssignmentInternSerializer(internship, many=True)
+                # print("2. internship_serializer: ", internship_serializer.data)
+                internship_serializer = list(internship_serializer.data)
+
+                internship_serializer = internship_serializer[0]
+                internship_id = internship_serializer['internship_id']
+
+                internshipName = InternshipDetails.objects.filter(pk=internship_id)
+                internshipName_serializer = InternshipsSerializer(internshipName, many=True)
+                internshipName_serializer = list(internshipName_serializer.data)
+                internshipName_serializer = internshipName_serializer[0]
+                internshipName = internshipName_serializer['internshipName']
+                companyName = internshipName_serializer['companyName']
+
+                hours = HoursReport.objects.filter(student_id=student_id)
+                hours_serializer = HoursReportTotalTimeSerializer(hours, many=True)
+                hours_serializer = list(hours_serializer.data)
+                # print("1. hours_serializer: ", hours_serializer)
+                total_hours = 0
+                for hour in hours_serializer:
+                    total_hours += hour['totalTime']
+
                 student_detail = {
-                            "firstName": first_name,
-                            "lastName": last_name,
-                            "email": email,
-                            "company": "empty-not implement",
-                            "internship": "empty-not implement",
-                            "hours": 0,
-                            "status": status
-                    }
+                    "firstName": first_name,
+                    "lastName": last_name,
+                    "email": email,
+                    "company": companyName,
+                    "internship": internshipName,
+                    "hours": total_hours,
+                    "status": status
+                }
             else:
                 student_detail = {
                     "firstName": first_name,

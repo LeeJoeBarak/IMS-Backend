@@ -143,6 +143,11 @@
           <option value="program.models.Program.*" />
           <option value="user.models.CompanyRepresentative.*" />
           <option value="internship.models.Priority.*" />
+          <option value="user.models.CompanyMentor.*" />
+          <option value="program.models.CompanyMentorAndProgram.*" />
+          <option value="program.models.CompanyRepresentativeAndProgram.*" />
+          <option value="user.models.ProgramCoordinator.*" />
+          <option value="user.models.SystemManager.*" />
         </list>
       </option>
     </inspection_tool>
