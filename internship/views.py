@@ -101,15 +101,13 @@ def get_nominees(request, program, companyName, internshipName):
             student_serializer = StudentSerializer(student, many=True)
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
-            student_status = student_serializer['status']
-            # print('D. status: ', status)
-            student_detail = {
-                "username": username,
-                "firstName": firstName,
-                "lastName": lastName,
-                "status": student_status
-            }
-            student_details.append(student_detail)
+            if student_serializer["status"] == help_fanctions.student_status[1]:
+                student_detail = {
+                    "username": username,
+                    "firstName": firstName,
+                    "lastName": lastName,
+                }
+                student_details.append(student_detail)
         return JsonResponse(student_details, safe=False)
 
 
