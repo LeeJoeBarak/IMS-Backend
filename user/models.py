@@ -30,7 +30,7 @@ class CompanyMentor(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "mentor"
+        return "מנטור"
 
 
 class CompanyRepresentative(models.Model):
@@ -38,28 +38,28 @@ class CompanyRepresentative(models.Model):
     companyName = models.CharField(max_length=100)
 
     def __str__(self):
-        return "companyRepresentative"
+        return "נציג חברה"
 
 
 class ProgramManager(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "programManager"
+        return "מנהל תוכנית"
 
 
 class ProgramCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "programCoordinator"
+        return "רכז תוכנית"
 
 
 class SystemManager(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return "systemManager"
+        return "מנהל מערכת"
 
 # export const GUEST = "guest";
 # export const SYSTEM_MANAGER = "systemManager";
