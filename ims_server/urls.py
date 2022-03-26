@@ -44,6 +44,7 @@ urlpatterns = [
     path('assignIntern', internship_views.AssignInternToInternship.as_view()),
     path('intern/hoursReport', internship_views.HoursReportByIntern.as_view()),
     path('programManager/<program>/<companyName>/<internshipName>/nominees', internship_views.get_nominees),
+    path('intern/getHours/<username>', internship_views.get_intern_hours),
     # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('admin/openProgram', program_views.PostCreateProgram.as_view()),

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 import internship
-from .models import InternshipDetails, Priority
+from .models import InternshipDetails, Priority, HoursReport
 
 
 class InternshipsSerializer(serializers.ModelSerializer):
@@ -26,6 +26,7 @@ class CreateInternshipSerializer(serializers.ModelSerializer):
         model = InternshipDetails
         fields = ('id', 'program_id', 'internshipName', 'companyName_id', 'about', 'requirements', 'quantity')
 
+
 # class CreateInternshipSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = InternshipDetails
@@ -43,3 +44,10 @@ class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Priority
         fields = ('Student_id', 'student_priority_number', 'internship_id')
+
+
+# HoursReport
+class HoursReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HoursReport
+        fields = ('student_id', 'date', 'startTime', 'endTime', 'approved')
