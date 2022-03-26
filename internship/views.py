@@ -60,6 +60,48 @@ def get_internships_by_program(request, program):
 #     }
 # ]
 @api_view(['GET'])
+def get_nominees_passed_company_interview(request, program, companyName, internshipName):
+    if request.method == 'GET':
+        student_details = []
+        internship_obj = InternshipDetails.objects.filter(internshipName=internshipName,
+                                                          program_id=program,
+                                                          companyName_id=companyName)
+        if not internship_obj.exists():
+            return Response('company/internship not found', status=HTTP_404_NOT_FOUND)
+        internship_serializer = InternshipIdSerializer(internship_obj, many=True)
+        internship_serializer = list(internship_serializer.data)
+        internship_serializer = internship_serializer[0]
+        internship_id = internship_serializer['id']
+        nominees = Priority.objects.filter(internship_id=internship_id)
+        nominees_serializer = InternshipsPrioritiesByCandidateSerializer(nominees, many=True)
+        nominees_serializer = list(nominees_serializer.data)
+        for nominee in nominees_serializer:
+            users = User.objects.all()
+            user = users.filter(id=nominee['Student_id'])
+            user_serializer = UserSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            username = user_serializer['username']
+            firstName = user_serializer['first_name']
+            lastName = user_serializer['last_name']
+            students = Student.objects.all()
+            student = students.filter(user_id=nominee['Student_id'])
+            student_serializer = StudentSerializer(student, many=True)
+            student_serializer = list(student_serializer.data)
+            student_serializer = student_serializer[0]
+            if nominee['status_decision_by_company'] == help_fanctions.student_status_for_internship[1]:
+                student_detail = {
+                    "username": username,
+                    "firstName": firstName,
+                    "lastName": lastName,
+                    "assigned": nominee['status_decision_by_program_manager']
+                }
+                student_details.append(student_detail)
+        return JsonResponse(student_details, safe=False)
+
+
+# assign to internship
+@api_view(['GET'])
 def get_nominees(request, program, companyName, internshipName):
     if request.method == 'GET':
         student_details = []
@@ -109,59 +151,6 @@ def get_nominees(request, program, companyName, internshipName):
                 }
                 student_details.append(student_detail)
         return JsonResponse(student_details, safe=False)
-
-
-# assign to internship
-# @api_view(['GET'])
-# def get_nominees(request, program, companyName, internshipName):
-#     if request.method == 'GET':
-#         student_details = []
-#         internship_obj = InternshipDetails.objects.filter(internshipName=internshipName,
-#                                                           program_id=program,
-#                                                           companyName_id=companyName)
-#         if not internship_obj.exists():
-#             return Response('company/internship not found', status=HTTP_404_NOT_FOUND)
-#         internship_serializer = InternshipIdSerializer(internship_obj, many=True)
-#         # print('5. internship_serializer: ', internship_serializer.data)
-#         internship_serializer = list(internship_serializer.data)
-#         # print('6. internship_serializer: ', internship_serializer)
-#         internship_serializer = internship_serializer[0]
-#         # print('7. internship_serializer: ', internship_serializer)
-#         internship_id = internship_serializer['id']
-#         nominees = Priority.objects.filter(internship_id=internship_id)
-#         # InternshipsPrioritiesByCandidateSerializer
-#         nominees_serializer = InternshipsPrioritiesByCandidateSerializer(nominees, many=True)
-#         nominees_serializer = list(nominees_serializer.data)
-#         # program_id = program_serializer['program_id']
-#         # print('1. nominees_serializer: ', nominees_serializer)
-#         for nominee in nominees_serializer:
-#             # print('2. nominee: ', nominee)
-#             users = User.objects.all()
-#             user = users.filter(id=nominee['Student_id'])
-#             # print("3. user: ", user)
-#             user_serializer = UserSerializer(user, many=True)
-#             # print("3. user_serializer: ", user_serializer)
-#             user_serializer = list(user_serializer.data)
-#             user_serializer = user_serializer[0]
-#             username = user_serializer['username']
-#             firstName = user_serializer['first_name']
-#             lastName = user_serializer['last_name']
-#             # print('A. username: ', username)
-#             # print('B. firstName: ', firstName)
-#             # print('C. lastName: ', lastName)
-#             students = Student.objects.all()
-#             student = students.filter(user_id=nominee['Student_id'])
-#             student_serializer = StudentSerializer(student, many=True)
-#             student_serializer = list(student_serializer.data)
-#             student_serializer = student_serializer[0]
-#             if student_serializer["status"] == help_fanctions.student_status[1]:
-#                 student_detail = {
-#                     "username": username,
-#                     "firstName": firstName,
-#                     "lastName": lastName,
-#                 }
-#                 student_details.append(student_detail)
-#         return JsonResponse(student_details, safe=False)
 
 
 # GET /intern/getHours/{username}:
@@ -379,6 +368,58 @@ class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
 #     "internshipName": "string",
 #     "username": "string"
 # }
+class UpdateStatusInternshipByManager(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        users = User.objects.all()
+        user = users.filter(username=request.data['username'])
+        if not user.exists():
+            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
+        # print("1. user: ", user)
+        user_serializer = UserDetailsSerializer(user, many=True)
+        user_serializer = list(user_serializer.data)
+        user_serializer = user_serializer[0]
+        Student_id = user_serializer['id']
+        # print('2. Student_id: ', Student_id)
+        program = StudentAndProgram.objects.filter(student_id=Student_id)
+        if not program.exists():
+            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
+        program_serializer = StudentAndProgramSerializers(program, many=True)
+        program_serializer = list(program_serializer.data)
+        program_serializer = program_serializer[0]
+        program_id = program_serializer['program_id']
+        # print('3. program_id: ', program_id)
+        internship_obj = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
+                                                          program_id=program_id,
+                                                          companyName_id=request.data['companyName'])
+        if not internship_obj.exists():
+            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
+        internship_serializer = InternshipIdSerializer(internship_obj, many=True)
+        # print('5. internship_serializer: ', internship_serializer.data)
+        internship_serializer = list(internship_serializer.data)
+        # print('6. internship_serializer: ', internship_serializer)
+        internship_serializer = internship_serializer[0]
+        # print('7. internship_serializer: ', internship_serializer)
+        internship_id = internship_serializer['id']
+
+        # check if student already assign:
+        priority_check = Priority.objects.get(
+            status_decision_by_program_manager=help_fanctions.student_status_for_internship[1],
+            internship_id=internship_id)
+        if priority_check is not None:
+            priority_check.status_decision_by_program_manager = help_fanctions.student_status_for_internship[0]
+            priority_check.save()
+        # update student status:
+        # status_decision_by_program_manager
+        priority = Priority.objects.get(Student_id=Student_id, internship_id=internship_id)
+        priority.status_decision_by_program_manager = help_fanctions.student_status_for_internship[1]
+        priority.save()
+
+        return Response(
+            content_type='successful set the student to the intern', status=status.HTTP_201_CREATED)
+
 
 class AssignInternToInternship(generics.GenericAPIView):
     authentication_classes = []
@@ -450,6 +491,7 @@ class AssignInternToInternship(generics.GenericAPIView):
 #             "date": "string",
 #             "startTime": "string",
 #             "endTime": "string"
+#             "totalTime": "string"
 #         }
 #     ]
 # }
