@@ -111,6 +111,59 @@ def get_nominees(request, program, companyName, internshipName):
         return JsonResponse(student_details, safe=False)
 
 
+# assign to internship
+# @api_view(['GET'])
+# def get_nominees(request, program, companyName, internshipName):
+#     if request.method == 'GET':
+#         student_details = []
+#         internship_obj = InternshipDetails.objects.filter(internshipName=internshipName,
+#                                                           program_id=program,
+#                                                           companyName_id=companyName)
+#         if not internship_obj.exists():
+#             return Response('company/internship not found', status=HTTP_404_NOT_FOUND)
+#         internship_serializer = InternshipIdSerializer(internship_obj, many=True)
+#         # print('5. internship_serializer: ', internship_serializer.data)
+#         internship_serializer = list(internship_serializer.data)
+#         # print('6. internship_serializer: ', internship_serializer)
+#         internship_serializer = internship_serializer[0]
+#         # print('7. internship_serializer: ', internship_serializer)
+#         internship_id = internship_serializer['id']
+#         nominees = Priority.objects.filter(internship_id=internship_id)
+#         # InternshipsPrioritiesByCandidateSerializer
+#         nominees_serializer = InternshipsPrioritiesByCandidateSerializer(nominees, many=True)
+#         nominees_serializer = list(nominees_serializer.data)
+#         # program_id = program_serializer['program_id']
+#         # print('1. nominees_serializer: ', nominees_serializer)
+#         for nominee in nominees_serializer:
+#             # print('2. nominee: ', nominee)
+#             users = User.objects.all()
+#             user = users.filter(id=nominee['Student_id'])
+#             # print("3. user: ", user)
+#             user_serializer = UserSerializer(user, many=True)
+#             # print("3. user_serializer: ", user_serializer)
+#             user_serializer = list(user_serializer.data)
+#             user_serializer = user_serializer[0]
+#             username = user_serializer['username']
+#             firstName = user_serializer['first_name']
+#             lastName = user_serializer['last_name']
+#             # print('A. username: ', username)
+#             # print('B. firstName: ', firstName)
+#             # print('C. lastName: ', lastName)
+#             students = Student.objects.all()
+#             student = students.filter(user_id=nominee['Student_id'])
+#             student_serializer = StudentSerializer(student, many=True)
+#             student_serializer = list(student_serializer.data)
+#             student_serializer = student_serializer[0]
+#             if student_serializer["status"] == help_fanctions.student_status[1]:
+#                 student_detail = {
+#                     "username": username,
+#                     "firstName": firstName,
+#                     "lastName": lastName,
+#                 }
+#                 student_details.append(student_detail)
+#         return JsonResponse(student_details, safe=False)
+
+
 # GET /intern/getHours/{username}:
 # [
 #     {
@@ -436,7 +489,8 @@ class HoursReportByIntern(generics.GenericAPIView):
                 student_id=Student_id,
                 date=l_hour['date'],
                 startTime=l_hour['startTime'],
-                endTime=l_hour['endTime']
+                endTime=l_hour['endTime'],
+                totalTime=l_hour['totalTime']
             )
             # print('A. date: ', l_hour['date'])
             # print('B. startTime: ', l_hour['startTime'])

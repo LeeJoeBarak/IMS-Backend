@@ -87,3 +87,4 @@ class HoursReport(models.Model):
     startTime = models.CharField(max_length=20, default='08:00:00')
     endTime = models.CharField(max_length=20, default='20:00:00')
     approved = models.BooleanField(default=False)
+    totalTime = models.FloatField(default=0.0)
