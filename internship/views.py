@@ -12,13 +12,14 @@ from rest_framework.status import HTTP_404_NOT_FOUND
 
 from program.models import Program, StudentAndProgram
 from program.serializers import ProgramNameSerializer, StudentAndProgramSerializers
-from user.models import Company, CompanyRepresentative, Student
+from user.models import Company, CompanyRepresentative, Student, CompanyMentor
 from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer, CompanySerializer, \
     UserSerializer, StudentSerializer
 from .serializers import InternshipsSerializer, CreateInternshipSerializer, InternshipIdSerializer, \
-    InternshipsPrioritiesByCandidateSerializer, HoursReportSerializer
+    InternshipsPrioritiesByCandidateSerializer, HoursReportSerializer, InternshipAndMentorSerializer, \
+    AssignmentInternSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
-from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport
+from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport, InternshipAndMentor
 from rest_framework.response import Response
 # from knox.models import AuthToken
 
@@ -193,6 +194,71 @@ def get_intern_hours(request, username):
             }
             hours_details.append(hour_details)
         return JsonResponse(hours_details, safe=False)
+
+
+# /mentor/getInterns/{username}
+# [
+#     {
+#         "username": "string",
+#         "first_name": "string",
+#         "last_name": "string",
+#         "email": "string",
+#         "internship": "string"
+#     }
+# ]
+@api_view(['GET'])
+def get_interns_mentor(request, username):
+    if request.method == 'GET':
+        students_details = []
+        try:
+            users = User.objects.all()
+            user = users.filter(username=username)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            # print("1. mentor_id: ", mentor_id)
+            # check if the user is a mentor:
+            mentor = CompanyMentor.objects.get(user_id=mentor_id)
+            # print("2. mentor: ", mentor)
+        except:
+            return Response('User not found', status=status.HTTP_404_NOT_FOUND)
+        internships = InternshipAndMentor.objects.filter(mentor_id=mentor_id)
+        # print("2. internships: ", internships)
+        internships_serializer = InternshipAndMentorSerializer(internships, many=True)
+        internships_serializer = list(internships_serializer.data)
+
+        for internship in internships_serializer:
+            # AssignmentIntern
+            assign_student = AssignmentIntern.objects.filter(internship_id=internship['internship_id'])
+            assign_student_serializer = AssignmentInternSerializer(assign_student, many=True)
+            assign_student_serializer = list(assign_student_serializer.data)
+            for student in assign_student_serializer:
+                users = User.objects.all()
+                user = users.filter(pk=student['student_id'])
+                user_serializer = UserSerializer(user, many=True)
+                user_serializer = list(user_serializer.data)
+                user_serializer = user_serializer[0]
+                username_student = user_serializer['username']
+                first_name_student = user_serializer['first_name']
+                last_name_student = user_serializer['last_name']
+                email_student = user_serializer['email']
+                username_student = user_serializer['username']
+                # internshipName:
+                internship_name = InternshipDetails.objects.filter(pk=internship['internship_id'])
+                internship_name_serializer = InternshipsSerializer(internship_name, many=True)
+                internship_name_serializer = list(internship_name_serializer.data)
+                internship_name_serializer = internship_name_serializer[0]
+                internshipName_student = internship_name_serializer['internshipName']
+                student_details = {
+                    "username": username_student,
+                    "first_name": first_name_student,
+                    "last_name": last_name_student,
+                    "email": email_student,
+                    "internship": internshipName_student,
+                }
+                students_details.append(student_details)
+        return JsonResponse(students_details, safe=False)
 
 
 # POST /programManager/createInternship:
