@@ -285,7 +285,7 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             program_id = program[0]
             companyName_id = company[0]
         except:
-            return Response('Invalid program / company', status.HTTP_400_BAD_REQUEST)
+            return Response('Invalid program / company', status.HTTP_404_NOT_FOUND)
         internshipName = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
                                                           program_id=program[0], companyName_id=company[0])
         print('4. internshipName: ', internshipName)
@@ -345,7 +345,7 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
             program_id = program[0]
             companyName_id = company[0]
         except:
-            return Response('Invalid username/program', status.HTTP_400_BAD_REQUEST)
+            return Response('Invalid username/program', status.HTTP_404_NOT_FOUND)
 
         internshipName = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
                                                           program_id=program[0], companyName_id=company[0])
