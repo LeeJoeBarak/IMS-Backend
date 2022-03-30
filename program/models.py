@@ -34,7 +34,7 @@ class StudentAndProgram(models.Model):
 # ProgramManager:
 class ProgramManagerAndProgram(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    programManager = models.OneToOneField(ProgramManager, on_delete=models.CASCADE)
+    programManager = models.ForeignKey(ProgramManager, on_delete=models.CASCADE)
 
 
 # ProgramCoordinator:
@@ -53,4 +53,4 @@ class CompanyRepresentativeAndProgram(models.Model):
 # CompanyMentor:
 class CompanyMentorAndProgram(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    companyMentor = models.OneToOneField(CompanyMentor, on_delete=models.CASCADE)
+    companyMentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)

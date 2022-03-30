@@ -471,14 +471,17 @@ class UpdateStatusInternshipByManager(generics.GenericAPIView):
         internship_serializer = internship_serializer[0]
         # print('7. internship_serializer: ', internship_serializer)
         internship_id = internship_serializer['id']
-
         # check if student already assign:
-        priority_check = Priority.objects.get(
-            status_decision_by_program_manager=help_fanctions.student_status_for_internship[1],
-            internship_id=internship_id)
-        if priority_check is not None:
-            priority_check.status_decision_by_program_manager = help_fanctions.student_status_for_internship[0]
-            priority_check.save()
+        priority_check= None
+        try:
+            priority_check = Priority.objects.get(
+                status_decision_by_program_manager=help_fanctions.student_status_for_internship[1],
+                internship_id=internship_id)
+            if priority_check is not None:
+                priority_check.status_decision_by_program_manager = help_fanctions.student_status_for_internship[0]
+                priority_check.save()
+        except:
+            priority_check= None
         # update student status:
         # status_decision_by_program_manager
         priority = Priority.objects.get(Student_id=Student_id, internship_id=internship_id)
