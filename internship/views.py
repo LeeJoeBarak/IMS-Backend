@@ -595,6 +595,9 @@ class HoursReportByIntern(generics.GenericAPIView):
                                                           endTime=l_hour['endTime'])
             if checkHoursReport.exists():
                 continue
+
+            # change to this if there is an error
+            # totalTime = float(l_hour['totalTime'])
             hoursReport = HoursReport.objects.create(
                 student_id=Student_id,
                 date=l_hour['date'],
