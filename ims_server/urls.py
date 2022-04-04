@@ -6,7 +6,7 @@ from internship import views as internship_views
 from user import views as user_views
 from program import views as program_views
 from user.api import RegisterAPI, LoginAPI, LogoutAPI, RegisterCompanyRepAPI, \
-    RegisterMentorAPI, RegisterProgramCoordinatorAPI, RegisterProgramManagerAPI
+    RegisterMentorAPI, RegisterProgramCoordinatorAPI, RegisterProgramManagerAPI, UpdatePassword
 from knox import views as knox_views
 from user.api import RegisterAPI, LoginAPI
 # from knox import views as knox_views
@@ -33,7 +33,7 @@ router.register(r'internships', internship_views.InternshipsView, 'internships')
 urlpatterns = [
     # path('', react, name="react"),
     # path('', include(router.urls)),
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
     path('students/<program>', user_views.get_details_about_students_by_program),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
@@ -66,6 +66,8 @@ urlpatterns = [
     path('users/login', LoginAPI.as_view()),
     # logout:
     path('users/logout', LogoutAPI.as_view()),
+    path('users/changePsw', UpdatePassword.as_view()),
+
 
 ]
 
