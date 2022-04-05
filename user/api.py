@@ -72,9 +72,11 @@ class RegisterCompanyRepAPI(generics.GenericAPIView):
             companyName=request.data['companyName'])
         companyRep_user.save()
 
-        company_user = Company.objects.create(
-            companyName=companyRep_user.companyName)
-        company_user.save()
+        companies_list = Company.objects.values_list('companyName', flat=True).order_by('companyName')
+        if request.data['companyName'] not in companies_list:
+            company_user = Company.objects.create(
+                companyName=companyRep_user.companyName)
+            company_user.save()
 
         return Response(
             content_type='A new user has been added',
