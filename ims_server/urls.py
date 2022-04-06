@@ -50,6 +50,7 @@ urlpatterns = [
     # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('admin/openProgram', program_views.PostCreateProgram.as_view()),
+    path('admin/programs', program_views.get_programs),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
     path('activePrograms', program_views.get_active_program),
     path('candidate/internshipsPriorities', internship_views.PostInternshipsPrioritiesByCandidate.as_view()),

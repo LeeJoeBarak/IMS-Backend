@@ -3,10 +3,10 @@ from .models import Program, StudentAndProgram, ProgramCoordinatorAndProgram, Co
     CompanyMentorAndProgram, ProgramManagerAndProgram
 
 
-# class ProgramsSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Program
-#         fields = ('id', 'program', 'department', 'year', 'semester','programManager', 'programCoordinator', 'prioritiesAmount', 'hoursRequired')
+class ProgramsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = ('program', 'department', 'year', 'semester', 'prioritiesAmount', 'hoursRequired', 'status')
 
 
 class PrioritiesAmountSerializer(serializers.ModelSerializer):
