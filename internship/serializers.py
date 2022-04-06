@@ -51,7 +51,7 @@ class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
 class HoursReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = HoursReport
-        fields = ('student_id', 'date', 'startTime', 'endTime', 'approved', 'totalTime')
+        fields = ('id', 'student_id', 'date', 'startTime', 'endTime', 'approved', 'totalTime')
 
 
 class HoursReportTotalTimeSerializer(serializers.ModelSerializer):

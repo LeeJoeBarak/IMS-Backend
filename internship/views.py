@@ -187,6 +187,7 @@ def get_intern_hours(request, username):
         hours_serializer = list(hours_serializer.data)
         for hour in hours_serializer:
             hour_details = {
+                "id": hour['id'],
                 "date": hour['date'],
                 "startTime": hour['startTime'],
                 "endTime": hour['endTime'],
