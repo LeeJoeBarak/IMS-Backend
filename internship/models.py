@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-from help_fanctions import intern_status_approved_hours_by_mentor, student_status_for_internship
+from help_fanctions import student_status_for_internship
 from program.models import Program
 from user.models import Company, CompanyMentor, Student
 
@@ -69,14 +69,6 @@ class HoursReport(models.Model):
     #     ]
     # }
 
-    # internship = models.ForeignKey(AssignmentIntern, on_delete=models.CASCADE, default='')
-    # student = models.ForeignKey(Student, on_delete=models.CASCADE, default='')
-    # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
-    # date = models.CharField(max_length=20, default='1.1.2020')
-    # startTime = models.CharField(max_length=20, default='08:00:00')
-    # endTime = models.CharField(max_length=20, default='20:00:00')
-    # status = models.CharField(default=intern_status_approved_hours_by_mentor[0], max_length=100)
-
     student = models.ForeignKey(Student, on_delete=models.CASCADE, default='')
     date = models.CharField(max_length=20, default='1.1.2020')
     startTime = models.CharField(max_length=20, default='08:00:00')
@@ -87,4 +79,9 @@ class HoursReport(models.Model):
 
 class InternshipAndMentor(models.Model):
     mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
+    internship = models.ForeignKey(InternshipDetails, on_delete=models.CASCADE, default='')
+
+
+class InternshipAndIntern(models.Model):
+    intern = models.ForeignKey(Student, on_delete=models.CASCADE)
     internship = models.ForeignKey(InternshipDetails, on_delete=models.CASCADE, default='')

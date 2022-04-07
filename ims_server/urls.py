@@ -33,7 +33,7 @@ router.register(r'internships', internship_views.InternshipsView, 'internships')
 urlpatterns = [
     # path('', react, name="react"),
     # path('', include(router.urls)),
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
     path('students/<program>', user_views.get_details_about_students_by_program),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
@@ -43,6 +43,7 @@ urlpatterns = [
     path('programManager/createInternship', internship_views.PostCreateInternshipByProgramManager.as_view()),
     path('assignIntern', internship_views.UpdateStatusInternshipByManager.as_view()),
     path('intern/hoursReport', internship_views.HoursReportByIntern.as_view()),
+    path('mentor/hoursApproval', internship_views.HoursApprovalByMentor.as_view()),
     path('programManager/<program>/<companyName>/<internshipName>/nominees',
          internship_views.get_nominees_passed_company_interview),
     path('intern/getHours/<username>', internship_views.get_intern_hours),
