@@ -32,7 +32,7 @@ router.register(r'internships', internship_views.InternshipsView, 'internships')
 urlpatterns = [
     path('', react, name="react"),
     path('', include(router.urls)),
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
     path('students/<program>', user_views.get_details_about_students_by_program),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
