@@ -17,9 +17,9 @@ from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializ
     UserSerializer, StudentSerializer
 from .serializers import InternshipsSerializer, CreateInternshipSerializer, InternshipIdSerializer, \
     InternshipsPrioritiesByCandidateSerializer, HoursReportSerializer, InternshipAndMentorSerializer, \
-    AssignmentInternSerializer
+    AssignmentInternSerializer, InternshipAndInternSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
-from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport, InternshipAndMentor
+from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport, InternshipAndMentor, InternshipAndIntern
 from rest_framework.response import Response
 # from knox.models import AuthToken
 
@@ -178,7 +178,7 @@ def get_intern_hours(request, username):
             user_serializer = user_serializer[0]
             Student_id = user_serializer['id']
             # check if the user is a student:
-            student = Student.objects.get(user_id=Student_id)
+            # student = Student.objects.get(user_id=Student_id)
             # print("2. student: ", student)
         except:
             return Response('User not found', status=status.HTTP_404_NOT_FOUND)
@@ -187,6 +187,7 @@ def get_intern_hours(request, username):
         hours_serializer = list(hours_serializer.data)
         for hour in hours_serializer:
             hour_details = {
+                "id": hour['id'],
                 "date": hour['date'],
                 "startTime": hour['startTime'],
                 "endTime": hour['endTime'],
@@ -243,7 +244,7 @@ def get_interns_mentor(request, username):
                 first_name_student = user_serializer['first_name']
                 last_name_student = user_serializer['last_name']
                 email_student = user_serializer['email']
-                username_student = user_serializer['username']
+                # username_student = user_serializer['username']
                 # internshipName:
                 internship_name = InternshipDetails.objects.filter(pk=internship['internship_id'])
                 internship_name_serializer = InternshipsSerializer(internship_name, many=True)
@@ -472,7 +473,7 @@ class UpdateStatusInternshipByManager(generics.GenericAPIView):
         # print('7. internship_serializer: ', internship_serializer)
         internship_id = internship_serializer['id']
         # check if student already assign:
-        priority_check= None
+        priority_check = None
         try:
             priority_check = Priority.objects.get(
                 status_decision_by_program_manager=help_fanctions.student_status_for_internship[1],
@@ -481,7 +482,7 @@ class UpdateStatusInternshipByManager(generics.GenericAPIView):
                 priority_check.status_decision_by_program_manager = help_fanctions.student_status_for_internship[0]
                 priority_check.save()
         except:
-            priority_check= None
+            priority_check = None
         # update student status:
         # status_decision_by_program_manager
         priority = Priority.objects.get(Student_id=Student_id, internship_id=internship_id)
@@ -615,3 +616,75 @@ class HoursReportByIntern(generics.GenericAPIView):
 
         return Response(
             content_type='successful add the hours', status=status.HTTP_200_OK)
+
+
+# /mentor/hoursApproval:
+# {
+#     "username": "string", - mentor
+#     "Intern": "string", - student
+#     "hours": [ - id of hour report
+#         "string"
+#     ]
+# }
+class HoursApprovalByMentor(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        # print("request.data: ", request.data)
+        # get student id:
+        try:
+            # check if the username is a mentor and then if he is the mentor of the intern:
+            users = User.objects.all()
+            user = users.filter(username=request.data['username'])
+
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            # print("1. mentor_id: ", mentor_id)
+
+            # check if the user is a mantor:
+            mentor = CompanyMentor.objects.get(user_id=mentor_id)
+            # print("2. mentor: ", mentor)
+            # get intern id:
+            users = User.objects.all()
+            user = users.filter(username=request.data['Intern'])
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            intern_id = user_serializer['id']
+            # print("3. inter_id: ", intern_id)
+            # get internship id by intern:
+            internshipAndIntern = InternshipAndIntern.objects.filter(intern_id=intern_id)
+            internshipAndIntern_serializer = InternshipAndInternSerializer(internshipAndIntern, many=True)
+            # print('4. internshipAndIntern_serializer: ', internshipAndIntern_serializer.data)
+            internshipAndIntern_serializer = list(internshipAndIntern_serializer.data)
+            # print('5. internshipAndIntern_serializer: ', internshipAndIntern_serializer)
+            internshipAndIntern_serializer = internshipAndIntern_serializer[0]
+            # print('6. internshipAndIntern_serializer: ', internshipAndIntern_serializer)
+            internship_id_by_intern = internshipAndIntern_serializer['internship_id']
+            # print('7. internship_id_by_intern: ', internship_id_by_intern)
+
+            # get internship id by mentor:
+            internships_id_mentor = InternshipAndMentor.objects.filter(mentor=mentor_id)
+            # InternshipAndMentorSerializer
+            internshipAndMentor_serializer = InternshipAndMentorSerializer(internships_id_mentor, many=True)
+            internshipAndMentor_serializer = list(internshipAndMentor_serializer.data)
+            for internshipAndMentor in internshipAndMentor_serializer:
+                if internshipAndMentor['internship_id'] == internship_id_by_intern:
+                    # update status:
+                    hours = []
+                    for hour in request.data['hours']:
+                        hour_report = HoursReport.objects.get(id=hour)
+                        hours.append(hour_report)
+                    for hour in hours:
+                        # print('7. internship: ', internship)
+                        # print('6. internship.isAssign: ', internship.isAssign)
+                        hour.approved = True
+                        # print('7. After internship.isAssign: ', internship.isAssign)
+                        hour.save()
+        except:
+            return Response('Invalid username/intern/hour id supplied', status=status.HTTP_401_UNAUTHORIZED)
+        return Response(
+            content_type='successful approve the hours', status=status.HTTP_200_OK)

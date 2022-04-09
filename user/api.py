@@ -1,16 +1,18 @@
 from tokenize import String
 
+from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from knox.auth import TokenAuthentication
 from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from knox.models import AuthToken
+from knox.models import AuthToken, User
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.settings import api_settings
 from knox.settings import knox_settings
+from django.contrib.auth.models import User
 
 from program.models import StudentAndProgram, CompanyMentorAndProgram, CompanyRepresentativeAndProgram, \
     ProgramManagerAndProgram, ProgramCoordinatorAndProgram
@@ -19,7 +21,8 @@ from program.serializers import StudentAndProgramSerializers, CompanyMentorAndPr
     ProgramCoordinatorAndProgramSerializers
 from .models import Student, CompanyMentor, CompanyRepresentative, ProgramManager, ProgramCoordinator, Company, \
     SystemManager
-from .serializer import UserSerializer, RegisterSerializer, LoginSerializer, StudentProgramSerializer, ProgramSerializer
+from .serializer import UserSerializer, RegisterSerializer, LoginSerializer, StudentProgramSerializer, \
+    ProgramSerializer, UpdatePasswordSerializer, UserDetailsSerializer
 
 
 # Register API:
@@ -45,7 +48,6 @@ class RegisterAPI(generics.GenericAPIView):
         )
         student_program.save()
 
-
         return Response(
             content_type='A new user has been added',
             status=status.HTTP_201_CREATED,
@@ -70,9 +72,11 @@ class RegisterCompanyRepAPI(generics.GenericAPIView):
             companyName=request.data['companyName'])
         companyRep_user.save()
 
-        company_user = Company.objects.create(
-            companyName=companyRep_user.companyName)
-        company_user.save()
+        companies_list = Company.objects.values_list('companyName', flat=True).order_by('companyName')
+        if request.data['companyName'] not in companies_list:
+            company_user = Company.objects.create(
+                companyName=companyRep_user.companyName)
+            company_user.save()
 
         return Response(
             content_type='A new user has been added',
@@ -150,27 +154,8 @@ class RegisterProgramManagerAPI(generics.GenericAPIView):
             status=status.HTTP_201_CREATED
         )
 
-# # /users/register/systemManager
-# class RegisterSystemManagerAPI(generics.GenericAPIView):
-#     authentication_classes = []
-#     permission_classes = []
-#     serializer_class = RegisterSerializer
-#
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         if not serializer.is_valid():
-#             return Response('A user with the same username already exists', status.HTTP_400_BAD_REQUEST)
-#         # serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-#
-#         systemManager_user = SystemManager.objects.create(
-#             user_id=UserSerializer(user, context=self.get_serializer_context()).data['id'])
-#         systemManager_user.save()
-#         return Response(
-#             content_type='A new user has been added',
-#             status=status.HTTP_201_CREATED
-#         )
 
+# /users/register/systemManager
 # Login API
 class LoginAPI(generics.GenericAPIView):
     # authentication_classes = ()
@@ -258,7 +243,6 @@ class LogoutAPI(generics.GenericAPIView):
     permission_classes = ()
 
     def post(self, request, format=None):
-
         # auth_token.delete()
         # print("request.data['Authorization']: ", request.data['Authorization'])
         obj = AuthToken.objects.get(token_key=request.data['Authorization'])
@@ -267,3 +251,28 @@ class LogoutAPI(generics.GenericAPIView):
         user_logged_out.send(sender=request.user.__class__,
                              request=request, user=request.user)
         return Response('successful logout', status=status.HTTP_204_NO_CONTENT)
+
+
+# /users/changePsw:
+class UpdatePassword(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+    serializer_class = UpdatePasswordSerializer
+
+    def post(self, request):
+        # print("request.data: ", request.data)
+        if request.data['new_password'] == request.data['old_password']:
+            return Response('Invalid username/password supplied', status=status.HTTP_401_UNAUTHORIZED)
+
+        user = authenticate(username=request.data['username'], password=request.data['old_password'])
+        # print("user: ", user)
+        if user is not None:
+            user.set_password(request.data['new_password'])
+            user.save()
+        else:
+            return Response('Invalid username/password supplied', status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(
+            content_type='successful change the password',
+            status=status.HTTP_201_CREATED,
+        )

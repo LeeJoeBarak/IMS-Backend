@@ -6,7 +6,7 @@ from internship import views as internship_views
 from user import views as user_views
 from program import views as program_views
 from user.api import RegisterAPI, LoginAPI, LogoutAPI, RegisterCompanyRepAPI, \
-    RegisterMentorAPI, RegisterProgramCoordinatorAPI, RegisterProgramManagerAPI
+    RegisterMentorAPI, RegisterProgramCoordinatorAPI, RegisterProgramManagerAPI, UpdatePassword
 from knox import views as knox_views
 from user.api import RegisterAPI, LoginAPI
 # from knox import views as knox_views
@@ -42,6 +42,7 @@ urlpatterns = [
     path('programManager/createInternship', internship_views.PostCreateInternshipByProgramManager.as_view()),
     path('assignIntern', internship_views.UpdateStatusInternshipByManager.as_view()),
     path('intern/hoursReport', internship_views.HoursReportByIntern.as_view()),
+    path('mentor/hoursApproval', internship_views.HoursApprovalByMentor.as_view()),
     path('programManager/<program>/<companyName>/<internshipName>/nominees',
          internship_views.get_nominees_passed_company_interview),
     path('intern/getHours/<username>', internship_views.get_intern_hours),
@@ -49,6 +50,7 @@ urlpatterns = [
     # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('admin/openProgram', program_views.PostCreateProgram.as_view()),
+    path('admin/programs', program_views.get_programs),
     path('hoursRequired/<program>', program_views.get_hours_required_by_program),
     path('activePrograms', program_views.get_active_program),
     path('candidate/internshipsPriorities', internship_views.PostInternshipsPrioritiesByCandidate.as_view()),
@@ -65,6 +67,8 @@ urlpatterns = [
     path('users/login', LoginAPI.as_view()),
     # logout:
     path('users/logout', LogoutAPI.as_view()),
+    path('users/changePsw', UpdatePassword.as_view()),
+
 
 ]
 

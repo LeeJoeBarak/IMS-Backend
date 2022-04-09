@@ -1,4 +1,4 @@
-# from rest_framework import serializers
+from rest_framework import serializers
 # from .models import CompanyRepresentative
 #
 #
@@ -83,6 +83,19 @@ class ProgramManagerSerializer(serializers.ModelSerializer):
 
 # Login Serializer
 class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        else:
+            raise serializers.ValidationError("Incorrect Credentials")
+
+
+# UpdatePassword Serializer
+class UpdatePasswordSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
