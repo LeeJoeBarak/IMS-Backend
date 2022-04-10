@@ -24,7 +24,7 @@ class InternshipsView(viewsets.ModelViewSet):
     queryset = Program.objects.all()
 
 
-# GET  /prioritiesAmount/{program}:
+# GET /prioritiesAmount/{program}:
 @api_view(['GET'])
 def get_priorities_amount_by_program(request, program):
     if request.method == 'GET':
@@ -41,7 +41,7 @@ def get_priorities_amount_by_program(request, program):
         return JsonResponse(amount['prioritiesAmount'], safe=False)
 
 
-# GET  /hoursRequired/{program}:
+# GET /hoursRequired/{program}:
 @api_view(['GET'])
 def get_hours_required_by_program(request, program):
     if request.method == 'GET':

@@ -54,7 +54,7 @@ class RegisterAPI(generics.GenericAPIView):
         )
 
 
-# /users/register/companyRep:
+# POST /users/register/companyRep:
 class RegisterCompanyRepAPI(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
@@ -236,7 +236,7 @@ class LoginAPI(generics.GenericAPIView):
         return Response('Invalid username/password supplied', status.HTTP_401_BAD_REQUEST)
 
 
-# Logout API
+# POST Logout:
 class LogoutAPI(generics.GenericAPIView):
     authentication_classes = (TokenAuthentication,)
     # permission_classes = (IsAuthenticated,)
