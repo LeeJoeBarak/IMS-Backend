@@ -15,6 +15,12 @@ class InternshipsSerializer(serializers.ModelSerializer):
         # "requirments": "string"
 
 
+class InternshipsFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InternshipDetails
+        fields = ('id', 'program', 'companyName', 'internshipName', 'about', 'requirements')
+
+
 class InternshipIdSerializer(serializers.ModelSerializer):
     class Meta:
         model = InternshipDetails
