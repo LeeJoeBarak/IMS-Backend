@@ -493,6 +493,59 @@ class UpdateStatusInternshipByManager(generics.GenericAPIView):
             content_type='successful set the student to the intern', status=status.HTTP_201_CREATED)
 
 
+# POST /companyRep/setStatus:
+# {
+#     "username": "string",
+#     "program": "string",
+#     "approved": [
+#         {
+#             "username": "string",
+#             "internship_id": "string"
+#         }
+#     ]
+# }
+
+class SetStatusByCompanyRep(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        try:
+            users = User.objects.all()
+            user = users.filter(username=request.data['username'])
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            companyRepresentative_id = user_serializer['id']
+            CompanyRep = CompanyRepresentative.objects.filter(user_id=companyRepresentative_id)
+
+            priorities = []
+            for a in request.data['approved']:
+                users = User.objects.all()
+                user = users.filter(username=a['username'])
+                # print("1. user: ", user)
+                user_serializer = UserDetailsSerializer(user, many=True)
+                user_serializer = list(user_serializer.data)
+                user_serializer = user_serializer[0]
+                Student_id = user_serializer['id']
+                program = StudentAndProgram.objects.filter(program_id=request.data['program'], student_id=Student_id)
+                if not program.exists():
+                    return Response('Invalid username\companyName\internshipName\studentsName supplied',
+                                    status=status.HTTP_401_UNAUTHORIZED)
+
+                priority = Priority.objects.get(Student_id=Student_id, internship_id=a['internship_id'])
+                priorities.append(priority)
+            for p in priorities:
+                p.status_decision_by_company = help_fanctions.student_status_for_internship[1]
+                p.save()
+        except:
+            return Response('Invalid username\companyName\internshipName\studentsName supplied',
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(
+            content_type='successful set the student status', status=status.HTTP_200_OK)
+
+
 class AssignInternToInternship(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
@@ -618,7 +671,7 @@ class HoursReportByIntern(generics.GenericAPIView):
             content_type='successful add the hours', status=status.HTTP_200_OK)
 
 
-# /mentor/hoursApproval:
+# POST /mentor/hoursApproval:
 # {
 #     "username": "string", - mentor
 #     "Intern": "string", - student
