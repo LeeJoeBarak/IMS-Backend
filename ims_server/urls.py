@@ -3,6 +3,7 @@ from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from rest_framework import routers
 from internship import views as internship_views
+from profile_user import views as profile_views
 from user import views as user_views
 from program import views as program_views
 from user.api import RegisterAPI, LoginAPI, LogoutAPI, RegisterCompanyRepAPI, \
@@ -33,7 +34,7 @@ router.register(r'internships', internship_views.InternshipsView, 'internships')
 urlpatterns = [
     # path('', react, name="react"),
     # path('', include(router.urls)),
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
     path('students/<program>', user_views.get_details_about_students_by_program),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
@@ -51,6 +52,8 @@ urlpatterns = [
     path('companyRep/<username>/candidates/<program>', internship_views.get_candidates_by_program_by_companyRep),
     path('mentor/getInterns/<username>', internship_views.get_interns_mentor),
     # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
+    path('student/profile/<username>', profile_views.get_student_profile),
+    path('student/createProfile', profile_views.PostCreateStudentProfile.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
     path('admin/openProgram', program_views.PostCreateProgram.as_view()),
     path('admin/programs', program_views.get_programs),
