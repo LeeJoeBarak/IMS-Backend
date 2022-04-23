@@ -234,3 +234,30 @@ def get_details_about_students_by_program(request, program):
             details.append(student_detail)
 
         return Response(details)
+
+
+
+# /mentors/{company}:
+# @api_view(['GET'])
+# def get_mentors_by_company(request, company):
+#     if request.method == 'GET':
+#         company_obj = Company.objects.filter(companyName=company)
+#         print(company_obj)
+#         company_obj_serializer = CompanySerializer(company_obj, many=True)
+#         company_obj_serializer = list(company_obj_serializer.data)
+#         company_obj = company_obj_serializer[0]
+#         print("company_obj: ", company_obj)
+#         # companyMentor = CompanyMentor.objects.all()
+#         companyMentors_list = CompanyMentor.filter(company_id=company)
+#         # companyMentors_list = CompanyMentor.objects.values_list('user_id', flat=True)
+#         companyMentors_list = list(companyMentors_list)
+#         return JsonResponse(companyMentors_list, safe=False)
+
+
+
+
+
+
+
+
+
