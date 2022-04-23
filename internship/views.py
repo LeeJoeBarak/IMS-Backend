@@ -796,7 +796,7 @@ class HoursReportByIntern(generics.GenericAPIView):
 # POST /mentor/hoursApproval:
 # {
 #     "username": "string", - mentor
-#     "Intern": "string", - student
+#     "intern": "string", - student
 #     "hours": [ - id of hour report
 #         "string"
 #     ]
@@ -824,7 +824,7 @@ class HoursApprovalByMentor(generics.GenericAPIView):
             # print("2. mentor: ", mentor)
             # get intern id:
             users = User.objects.all()
-            user = users.filter(username=request.data['Intern'])
+            user = users.filter(username=request.data['intern'])
             user_serializer = UserDetailsSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
