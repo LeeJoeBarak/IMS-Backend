@@ -43,7 +43,7 @@ urlpatterns = [
     path('programManagers', user_views.get_program_managers),
     path('internships/<program>', internship_views.get_internships_by_program),
     path('companyRep/createInternship', internship_views.PostCreateInternshipByCompanyRep.as_view()),
-    path('programManager/createInternship', internship_views.PostCreateInternshipByProgramManager.as_view()),
+    path('programManager/createInternship', internship_views.PostCreateInternshipByProgramManager.as_view(),name="PostCreateInternshipByProgramManager"),
     path('assignIntern', internship_views.UpdateStatusInternshipByManager.as_view()),
     path('companyRep/setStatus', internship_views.SetStatusByCompanyRep.as_view()),
     path('mentor/setStatus', internship_views.SetStatusByMentor.as_view()),
