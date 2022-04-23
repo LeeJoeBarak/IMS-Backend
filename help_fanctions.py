@@ -37,7 +37,7 @@ gradesSheet_storage = FileSystemStorage(location='./data/')
 
 def save_to_path(path):
     return os.path.join(settings.LOCAL_FILE_DIR, path)
-    # return os.path.join(settings.LOCAL_FILE_DIR, 'data\images')
+
 
 # def cv_path():
 #     return os.path.join(settings.LOCAL_FILE_DIR, 'data\cv')
