@@ -23,7 +23,7 @@ from .models import Company, ProgramManager, Student, CompanyMentor, CompanyRepr
 
 from rest_framework.response import Response
 
-from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer
+from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer, MentorSerializer
 
 
 # GET /companies
@@ -238,20 +238,29 @@ def get_details_about_students_by_program(request, program):
 
 
 # /mentors/{company}:
-# @api_view(['GET'])
-# def get_mentors_by_company(request, company):
-#     if request.method == 'GET':
-#         company_obj = Company.objects.filter(companyName=company)
-#         print(company_obj)
-#         company_obj_serializer = CompanySerializer(company_obj, many=True)
-#         company_obj_serializer = list(company_obj_serializer.data)
-#         company_obj = company_obj_serializer[0]
-#         print("company_obj: ", company_obj)
-#         # companyMentor = CompanyMentor.objects.all()
-#         companyMentors_list = CompanyMentor.filter(company_id=company)
-#         # companyMentors_list = CompanyMentor.objects.values_list('user_id', flat=True)
-#         companyMentors_list = list(companyMentors_list)
-#         return JsonResponse(companyMentors_list, safe=False)
+@api_view(['GET'])
+def get_mentors_by_company(request, company):
+    if request.method == 'GET':
+        mentor_details= []
+        company_obj = Company.objects.filter(companyName=company)
+        companyMentors_list = CompanyMentor.objects.filter(company_id=company)
+        companyMentors_serializer = MentorSerializer(companyMentors_list, many=True)
+        companyMentors_serializer = list(companyMentors_serializer.data)
+        for mentor in companyMentors_serializer:
+            users = User.objects.all()
+            user = users.filter(pk=mentor['user_id'])
+            # print(user)
+            user_serializer = UserSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_detail = {
+                "firstName": user_serializer['first_name'],
+                "lastName": user_serializer['last_name'],
+                "username": user_serializer['username']
+            }
+            mentor_details.append(mentor_detail)
+
+        return JsonResponse(mentor_details, safe=False)
 
 
 
