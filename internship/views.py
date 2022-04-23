@@ -14,7 +14,7 @@ from program.models import Program, StudentAndProgram
 from program.serializers import ProgramNameSerializer, StudentAndProgramSerializers
 from user.models import Company, CompanyRepresentative, Student, CompanyMentor
 from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer, CompanySerializer, \
-    UserSerializer, StudentSerializer
+    UserSerializer, StudentSerializer, MentorSerializer
 from .serializers import InternshipsSerializer, CreateInternshipSerializer, InternshipIdSerializer, \
     InternshipsPrioritiesByCandidateSerializer, HoursReportSerializer, InternshipAndMentorSerializer, \
     AssignmentInternSerializer, InternshipAndInternSerializer, InternshipsFullSerializer
@@ -387,6 +387,68 @@ def get_candidates_by_program_by_companyRep(request, username, program):
         return JsonResponse(students_details, safe=False)
 
 
+# GET /mentor/{username}/candidates/{program}:
+@api_view(['GET'])
+def get_candidates_by_program_by_mentor(request, username, program):
+    if request.method == 'GET':
+        students_details = []
+        try:
+            # check if the username is of a real CompanyRepresentative
+            users = User.objects.all()
+            user = users.filter(username=username)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            # print("1. companyRep_id: ", companyRep_id)
+            # check if the user is a mentor:
+            mentor = CompanyMentor.objects.filter(user_id=mentor_id)
+            # print("2. companyRep: ", companyRep)
+        except:
+            return Response('mentor not found', status=HTTP_404_NOT_FOUND)
+        # get company's CompanyRepresentative:
+        # print("2. companyRep: ", companyRep)
+        mentor_serializer = MentorSerializer(mentor, many=True)
+        mentor_serializer = list(mentor_serializer.data)
+        mentor_serializer = mentor_serializer[0]
+        company = mentor_serializer['company_id']
+        internships = InternshipDetails.objects.filter(program_id=program, companyName_id=company)
+        # print("2. internships: ", internships)
+        internships_serializer = InternshipsFullSerializer(internships, many=True)
+        internships_serializer = list(internships_serializer.data)
+
+        for internship in internships_serializer:
+            students_priority = Priority.objects.filter(internship_id=internship['id'])
+            students_priority_serializer = InternshipsPrioritiesByCandidateSerializer(students_priority, many=True)
+            students_priority_serializer = list(students_priority_serializer.data)
+            internship_id = internship['id']
+            internship_name = internship['internshipName']
+            for student in students_priority_serializer:
+                users = User.objects.all()
+                user = users.filter(pk=student['Student_id'])
+                user_serializer = UserSerializer(user, many=True)
+                user_serializer = list(user_serializer.data)
+                user_serializer = user_serializer[0]
+                username_student = user_serializer['username']
+                first_name_student = user_serializer['first_name']
+                last_name_student = user_serializer['last_name']
+                priority = student['student_priority_number']
+                status = student['status_decision_by_company']
+
+                student_details = {
+                    "username": username_student,
+                    "first_name": first_name_student,
+                    "last_name": last_name_student,
+                    "internship_id": internship_id,
+                    "internship_name": internship_name,
+                    "priority": priority,
+                    "status_decision_by_company": status == 'true'
+                }
+                students_details.append(student_details)
+        return JsonResponse(students_details, safe=False)
+
+
+
 # POST /programManager/createInternship:
 # {
 #     "program": "string",
@@ -709,6 +771,47 @@ class SetStatusByCompanyRep(generics.GenericAPIView):
             user_serializer = user_serializer[0]
             companyRepresentative_id = user_serializer['id']
             CompanyRep = CompanyRepresentative.objects.filter(user_id=companyRepresentative_id)
+
+            priorities = []
+            for a in request.data['approved']:
+                users = User.objects.all()
+                user = users.filter(username=a['username'])
+                # print("1. user: ", user)
+                user_serializer = UserDetailsSerializer(user, many=True)
+                user_serializer = list(user_serializer.data)
+                user_serializer = user_serializer[0]
+                Student_id = user_serializer['id']
+                program = StudentAndProgram.objects.filter(program_id=request.data['program'], student_id=Student_id)
+                if not program.exists():
+                    return Response('Invalid username\companyName\internshipName\studentsName supplied',
+                                    status=status.HTTP_401_UNAUTHORIZED)
+
+                priority = Priority.objects.get(Student_id=Student_id, internship_id=a['internship_id'])
+                priorities.append(priority)
+            for p in priorities:
+                p.status_decision_by_company = help_fanctions.student_status_for_internship[1]
+                p.save()
+        except:
+            return Response('Invalid username\companyName\internshipName\studentsName supplied',
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(
+            content_type='successful set the student status', status=status.HTTP_200_OK)
+
+
+class SetStatusByMentor(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        try:
+            users = User.objects.all()
+            user = users.filter(username=request.data['username'])
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            mentor = CompanyMentor.objects.filter(user_id=mentor_id)
 
             priorities = []
             for a in request.data['approved']:

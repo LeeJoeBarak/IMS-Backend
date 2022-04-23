@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate
 
 # User Serializer
 from program.models import StudentAndProgram, Program
-from user.models import Student, Company, ProgramManager, CompanyRepresentative
+from user.models import Student, Company, ProgramManager, CompanyRepresentative, CompanyMentor
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
@@ -105,3 +105,9 @@ class UpdatePasswordSerializer(serializers.Serializer):
             return user
         else:
             raise serializers.ValidationError("Incorrect Credentials")
+
+
+class MentorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyMentor
+        fields = ('company_id', 'user_id')
