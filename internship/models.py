@@ -108,8 +108,6 @@ class MentorReport(models.Model):
     # }
     mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
     intern = models.ForeignKey(Student, on_delete=models.CASCADE)
-    reportByMentor = models.FileField(verbose_name="reportByMentor",
-                                      upload_to=save_to_path(saves_paths['reportByMentor']),
-                                      storage=reportByMentor_storage, null=True, blank=True)
-
-
+    report = models.FileField(verbose_name="reportByMentor",
+                              upload_to=save_to_path(saves_paths['reportByMentor']),
+                              storage=reportByMentor_storage, null=True, blank=True)

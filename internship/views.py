@@ -20,7 +20,7 @@ from .serializers import InternshipsSerializer, CreateInternshipSerializer, Inte
     AssignmentInternSerializer, InternshipAndInternSerializer, InternshipsFullSerializer
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
 from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport, InternshipAndMentor, \
-    InternshipAndIntern, InternReport
+    InternshipAndIntern, InternReport, MentorReport
 from rest_framework.response import Response
 # from knox.models import AuthToken
 
@@ -915,6 +915,91 @@ class PostUploadReportByIntern(generics.GenericAPIView):
                 intern_id=student_id)
             intern_report.save()
             # print('5. intern_report: ', intern_report)
+            return Response(content_type='successful upload', status=status.HTTP_200_OK)
+
+        return Response(content_type='successful upload', status=status.HTTP_200_OK)
+
+
+# POST /mentor/uploadReport
+# {
+#     "username": "string",
+#     "intern": "string",
+#     "report": "string"
+# }
+class PostUploadReportByMentor(generics.GenericAPIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        try:
+            users = User.objects.all()
+            # mentor:
+            user = users.filter(username=request.data['username'])
+            if not user.exists():
+                return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
+            # print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            # print('2. mentor_id: ', mentor_id)
+            # Check if the user is a mentor:
+            mentor = CompanyMentor.objects.filter(user_id=mentor_id)
+            # print('3. mentor: ', mentor)
+            # intern:
+            user = users.filter(username=request.data['intern'])
+            if not user.exists():
+                return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
+            # print("4. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            student_id = user_serializer['id']
+            # print('5. student_id: ', student_id)
+            # Check if the user is a student:
+            student = Student.objects.filter(user_id=student_id)
+            student_serializer = StudentSerializer(student, many=True)
+            student_serializer = list(student_serializer.data)
+            student_serializer = student_serializer[0]
+            # Check if the student is an intern:
+            student_serializer['status']
+            # print('3. status: ', student_serializer['status'])
+            if student_serializer['status'] != help_fanctions.student_status[2]:
+                return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
+
+            internshipAndIntern = InternshipAndIntern.objects.filter(intern_id=student_id)
+            internshipAndIntern_serializer = InternshipAndInternSerializer(internshipAndIntern, many=True)
+            internshipAndIntern_serializer = list(internshipAndIntern_serializer.data)
+            internshipAndIntern_serializer = internshipAndIntern_serializer[0]
+            internship_id_intern = internshipAndIntern_serializer['internship_id']
+            # print('6. internship_id_intern: ', internship_id_intern)
+
+            internshipAndMentor = InternshipAndMentor.objects.filter(mentor_id=mentor_id)
+            internshipAndMentor_serializer = InternshipAndMentorSerializer(internshipAndMentor, many=True)
+            internshipAndMentor_serializer = list(internshipAndMentor_serializer.data)
+            internshipAndMentor_serializer = internshipAndMentor_serializer[0]
+            internship_id_mentor = internshipAndMentor_serializer['internship_id']
+            # print('7. internship_id_mentor: ', internship_id_mentor)
+            if internship_id_mentor != internship_id_intern:
+                return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
+
+        except:
+            return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            mentor_report = MentorReport.objects.get(intern_id=student_id)
+            mentor_report.report = request.data['report']
+            mentor_report.save()
+            # print('8. mentor_report: ', mentor_report)
+
+        except:
+            # return Response('4. Invalid username', status.HTTP_401_UNAUTHORIZED)
+            mentor_report = MentorReport.objects.create(
+                report=request.data['report'],
+                intern_id=student_id,
+                mentor_id=mentor_id)
+            mentor_report.save()
+            # print('9. mentor_report: ', mentor_report)
             return Response(content_type='successful upload', status=status.HTTP_200_OK)
 
         return Response(content_type='successful upload', status=status.HTTP_200_OK)
