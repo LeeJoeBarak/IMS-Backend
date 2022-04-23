@@ -31,6 +31,7 @@ def react(request):
 router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
 
+
 urlpatterns = [
     # path('', react, name="react"),
     # path('', include(router.urls)),
