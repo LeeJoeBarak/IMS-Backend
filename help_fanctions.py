@@ -28,8 +28,8 @@ saves_paths = {
     "photo": 'data\images',
     "cv": 'data\cv',
     "gradesSheet": 'data\gradesSheet',
-    "reportByStudent": 'data\reportByStudent',
-    "reportByMentor": 'data\reportByMentor'
+    "reportByStudent": 'data/reportByStudent',
+    "reportByMentor": 'data/reportByMentor'
 }
 
 cv_storage = FileSystemStorage(location='./data/')
