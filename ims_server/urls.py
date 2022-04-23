@@ -30,6 +30,26 @@ def react(request):
 router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
 
+# todo: update web routes when adding a page
+react_routes = [
+    'login',
+    'changePass',
+    'register',
+    'internships',
+    'internshipsPriorities',
+    'createInternship/manager',
+    'createInternship/company',
+    'reportHours',
+    'assignInternships',
+    'students',
+    'mentor/interns',
+    'createProgram',
+    'approveHours',
+    'programs',
+    'approveCandidates',
+    'forgetPass', #?
+    'forgetPassEmail', #?
+   ]
 
 urlpatterns = [
     path('', react, name="react"),
@@ -76,7 +96,8 @@ urlpatterns = [
     path('users/logout', LogoutAPI.as_view()),
     path('users/changePsw', UpdatePassword.as_view()),
 
+    re_path(r'^(%s)?$' % '|'.join(react_routes), TemplateView.as_view(template_name='index.html'))
 
 ]
 
-urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
+# urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
