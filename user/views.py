@@ -200,8 +200,20 @@ def get_details_about_students_by_program(request, program):
                 hours_serializer = list(hours_serializer.data)
                 # print("1. hours_serializer: ", hours_serializer)
                 total_hours = 0
+                totalSecs = 0
                 for hour in hours_serializer:
-                    total_hours += hour['totalTime']
+                    tm = hour['totalTime']
+                    # print("1. tm: ", tm)
+                    # total_hours += hour['totalTime']
+                    timeParts = [int(s) for s in tm.split(':')]
+                    # print("2. timeParts: ", timeParts)
+                    totalSecs += (timeParts[0] * 60 + timeParts[1])
+                    # print("3. totalSecs: ", totalSecs)
+                print("4. timeParts: ", timeParts)
+                hr, minute = divmod(totalSecs, 60)
+                # print("%d:%02d" % (hr, minute))
+
+                total_hours = "%d:%02d" % (hr, minute)
 
                 student_detail = {
                     "firstName": first_name,
