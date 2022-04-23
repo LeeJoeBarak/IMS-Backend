@@ -372,6 +372,7 @@ def get_candidates_by_program_by_companyRep(request, username, program):
                 first_name_student = user_serializer['first_name']
                 last_name_student = user_serializer['last_name']
                 priority = student['student_priority_number']
+                status = student['status_decision_by_company']
 
                 student_details = {
                     "username": username_student,
@@ -380,6 +381,7 @@ def get_candidates_by_program_by_companyRep(request, username, program):
                     "internship_id": internship_id,
                     "internship_name": internship_name,
                     "priority": priority,
+                    "status_decision_by_company": status == 'true'
                 }
                 students_details.append(student_details)
         return JsonResponse(students_details, safe=False)
@@ -916,4 +918,3 @@ class PostUploadReportByIntern(generics.GenericAPIView):
             return Response(content_type='successful upload', status=status.HTTP_200_OK)
 
         return Response(content_type='successful upload', status=status.HTTP_200_OK)
-
