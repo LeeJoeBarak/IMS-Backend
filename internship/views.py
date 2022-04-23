@@ -943,10 +943,12 @@ class PostUploadReportByIntern(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
 
-    def post(self, request):
+    def post(self, request, username):
+        # print('uploadReport: ', username)
         try:
             users = User.objects.all()
-            user = users.filter(username=request.data['username'])
+            user = users.filter(username = username)
+            # user = users.filter(username=request.data['username'])
             if not user.exists():
                 return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
             # print("1. user: ", user)
