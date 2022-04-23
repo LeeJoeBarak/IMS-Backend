@@ -30,9 +30,9 @@ from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer
 @api_view(['GET'])
 def get_companies_list(request):
     if request.method == 'GET':
-        companies = Company.objects.all()
-        companies_serializer = CompanySerializer(companies, many=True)
-        return JsonResponse(companies_serializer.data, safe=False)
+        companies_list = Company.objects.values_list('companyName', flat=True)
+        companies_list = list(companies_list)
+        return JsonResponse(companies_list, safe=False)
 
 
 # GET /programManagers:
