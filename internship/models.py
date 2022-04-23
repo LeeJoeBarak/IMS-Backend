@@ -2,7 +2,8 @@ from django.db import models
 
 # Create your models here.
 
-from help_fanctions import student_status_for_internship
+from help_fanctions import student_status_for_internship, reportByStudent_storage, save_to_path, saves_paths, \
+    reportByMentor_storage
 from program.models import Program
 from user.models import Company, CompanyMentor, Student
 
@@ -85,3 +86,30 @@ class InternshipAndMentor(models.Model):
 class InternshipAndIntern(models.Model):
     intern = models.ForeignKey(Student, on_delete=models.CASCADE)
     internship = models.ForeignKey(InternshipDetails, on_delete=models.CASCADE, default='')
+
+
+class InternReport(models.Model):
+    # {
+    #     "username": "string",
+    #     "report": "string"
+    # }
+
+    intern = models.ForeignKey(Student, on_delete=models.CASCADE)
+    report = models.FileField(verbose_name="reportByStudent",
+                              upload_to=save_to_path(saves_paths['reportByStudent']),
+                              storage=reportByStudent_storage, null=True, blank=True)
+
+
+class MentorReport(models.Model):
+    # {
+    #     "username": "string",
+    #     "Intern": "string",
+    #     "report": "string"
+    # }
+    mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE)
+    intern = models.ForeignKey(Student, on_delete=models.CASCADE)
+    reportByMentor = models.FileField(verbose_name="reportByMentor",
+                                      upload_to=save_to_path(saves_paths['reportByMentor']),
+                                      storage=reportByMentor_storage, null=True, blank=True)
+
+
