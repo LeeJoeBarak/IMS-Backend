@@ -38,7 +38,7 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('companies', user_views.get_companies_list),
     path('students/<program>', user_views.get_details_about_students_by_program),
-    # path('mentors/<company>', user_views.get_mentors_by_company),
+    path('mentors/<company>', user_views.get_mentors_by_company),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
     path('programManagers', user_views.get_program_managers),
     path('internships/<program>', internship_views.get_internships_by_program),
