@@ -243,7 +243,8 @@ def get_intern_hours(request, username):
                 "date": hour['date'],
                 "startTime": hour['startTime'],
                 "endTime": hour['endTime'],
-                "approved": hour['approved']
+                "approved": hour['approved'],
+                "totalTime": hour['totalTime']
             }
             hours_details.append(hour_details)
         return JsonResponse(hours_details, safe=False)
