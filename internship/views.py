@@ -344,7 +344,7 @@ def get_candidates_by_program_by_companyRep(request, username, program):
             companyRep = CompanyRepresentative.objects.filter(user_id=companyRep_id)
             # print("2. companyRep: ", companyRep)
         except:
-            return Response('companyRep not found', status=status.HTTP_404_NOT_FOUND)
+            return Response('companyRep not found', status=HTTP_404_NOT_FOUND)
         # get company's CompanyRepresentative:
         # print("2. companyRep: ", companyRep)
         companyRepresentative = CompanyRepresentativeSerializer(companyRep, many=True)
@@ -411,12 +411,12 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             program_id = program[0]
             companyName_id = company[0]
         except:
-            return Response('Invalid program / company', status.HTTP_404_NOT_FOUND)
+            return Response('1.0Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
         internshipName = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
                                                           program_id=program[0], companyName_id=company[0])
-        print('4. internshipName: ', internshipName)
+        # print('4. internshipName: ', internshipName)
         if len(internshipName) != 0:
-            return Response('Internship name supplied already exists', status.HTTP_400_BAD_REQUEST)
+            return Response('2. Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
 
         internship = InternshipDetails.objects.create(
             program_id=ProgramNameSerializer(program_id, context=self.get_serializer_context()).data['program'],
@@ -425,7 +425,41 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             about=request.data['about'],
             requirements=request.data['requirements']
         )
-        # print('6. internship: ', internship)
+        print("1. internship: ", internship.pk)
+
+        try:
+            users = User.objects.all()
+            # mentor:
+            user = users.filter(username=request.data['mentor'])
+            if not user.exists():
+                return Response('3. Invalid company supplied / internshipName already exists',
+                                status.HTTP_401_UNAUTHORIZED)
+            # print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            print('2. mentor_id: ', mentor_id)
+            # Check if the user is a mentor:
+            mentor = CompanyMentor.objects.filter(user_id=mentor_id)
+        except:
+            return Response('4. Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
+
+        # "mentor": "string"
+        print("3. mentor_id: ", mentor_id)
+        internship = InternshipDetails.objects.filter(pk=internship.pk)
+        internship_serializer = CreateInternshipSerializer(internship, many=True)
+        print("3. internship_serializer: ", internship_serializer)
+        internship_serializer = list(internship_serializer.data)
+        internship_serializer = internship_serializer[0]
+        internship_id= internship_serializer['id']
+
+        internshipAndMentor = InternshipAndMentor.objects.create(
+            internship_id=internship_id,
+            mentor_id=mentor_id
+        )
+
+        print('4. internshipAndMentor: ', internshipAndMentor)
 
         return Response(
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
@@ -488,6 +522,38 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
             requirements=request.data['requirements']
         )
         # print('5. internship: ', internship)
+
+        # try:
+        #     users = User.objects.all()
+        #     # mentor:
+        #     user = users.filter(username=request.data['mentor'])
+        #     if not user.exists():
+        #         return Response('3. Invalid company supplied / internshipName already exists',
+        #                         status.HTTP_401_UNAUTHORIZED)
+        #     # print("1. user: ", user)
+        #     user_serializer = UserDetailsSerializer(user, many=True)
+        #     user_serializer = list(user_serializer.data)
+        #     user_serializer = user_serializer[0]
+        #     mentor_id = user_serializer['id']
+        #     print('2. mentor_id: ', mentor_id)
+        #     # Check if the user is a mentor:
+        #     mentor = CompanyMentor.objects.filter(user_id=mentor_id)
+        # except:
+        #     return Response('4. Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
+        #
+        # # "mentor": "string"
+        # print("3. mentor_id: ", mentor_id)
+        # internship = InternshipDetails.objects.filter(pk=internship.pk)
+        # internship_serializer = CreateInternshipSerializer(internship, many=True)
+        # print("3. internship_serializer: ", internship_serializer)
+        # internship_serializer = list(internship_serializer.data)
+        # internship_serializer = internship_serializer[0]
+        # internship_id= internship_serializer['id']
+        #
+        # internshipAndMentor = InternshipAndMentor.objects.create(
+        #     internship_id=internship_id,
+        #     mentor_id=mentor_id
+        # )
 
         return Response(
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
@@ -978,7 +1044,7 @@ class PostUploadReportByMentor(generics.GenericAPIView):
             internshipAndMentor_serializer = InternshipAndMentorSerializer(internshipAndMentor, many=True)
             internshipAndMentor_serializer = list(internshipAndMentor_serializer.data)
             internshipAndMentor_serializer = internshipAndMentor_serializer[0]
-            internship_id_mentor = internshipAndMentor_serializer['internship_id']
+            internship_id_mentor = internshipAndMentor_serializer['id']
             # print('7. internship_id_mentor: ', internship_id_mentor)
             if internship_id_mentor != internship_id_intern:
                 return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
