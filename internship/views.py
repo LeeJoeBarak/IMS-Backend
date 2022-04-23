@@ -95,7 +95,7 @@ def get_nominees_passed_company_interview(request, program, companyName, interns
                     "username": username,
                     "firstName": firstName,
                     "lastName": lastName,
-                    "assigned": nominee['status_decision_by_company'] == help_fanctions.student_status_for_internship[1]
+                    "assigned": nominee['status_decision_by_program_manager'] == 'true'
                 }
                 student_details.append(student_detail)
         return JsonResponse(student_details, safe=False)
