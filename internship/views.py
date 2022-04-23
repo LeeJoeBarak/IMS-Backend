@@ -425,7 +425,7 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             about=request.data['about'],
             requirements=request.data['requirements']
         )
-        print("1. internship: ", internship.pk)
+        # print("1. internship: ", internship.pk)
 
         try:
             users = User.objects.all()
@@ -439,17 +439,17 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
             mentor_id = user_serializer['id']
-            print('2. mentor_id: ', mentor_id)
+            # print('2. mentor_id: ', mentor_id)
             # Check if the user is a mentor:
             mentor = CompanyMentor.objects.filter(user_id=mentor_id)
         except:
             return Response('4. Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
 
         # "mentor": "string"
-        print("3. mentor_id: ", mentor_id)
+        # print("3. mentor_id: ", mentor_id)
         internship = InternshipDetails.objects.filter(pk=internship.pk)
         internship_serializer = CreateInternshipSerializer(internship, many=True)
-        print("3. internship_serializer: ", internship_serializer)
+        # print("3. internship_serializer: ", internship_serializer)
         internship_serializer = list(internship_serializer.data)
         internship_serializer = internship_serializer[0]
         internship_id= internship_serializer['id']
@@ -509,7 +509,7 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
 
         internshipName = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
                                                           program_id=program[0], companyName_id=company[0])
-        print('4. internshipName: ', internshipName)
+        # print('4. internshipName: ', internshipName)
         if len(internshipName) != 0:
             return Response('Internship name supplied already exists',
                             status.HTTP_400_BAD_REQUEST)
@@ -523,37 +523,37 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
         )
         # print('5. internship: ', internship)
 
-        # try:
-        #     users = User.objects.all()
-        #     # mentor:
-        #     user = users.filter(username=request.data['mentor'])
-        #     if not user.exists():
-        #         return Response('3. Invalid company supplied / internshipName already exists',
-        #                         status.HTTP_401_UNAUTHORIZED)
-        #     # print("1. user: ", user)
-        #     user_serializer = UserDetailsSerializer(user, many=True)
-        #     user_serializer = list(user_serializer.data)
-        #     user_serializer = user_serializer[0]
-        #     mentor_id = user_serializer['id']
-        #     print('2. mentor_id: ', mentor_id)
-        #     # Check if the user is a mentor:
-        #     mentor = CompanyMentor.objects.filter(user_id=mentor_id)
-        # except:
-        #     return Response('4. Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
-        #
-        # # "mentor": "string"
+        try:
+            users = User.objects.all()
+            # mentor:
+            user = users.filter(username=request.data['mentor'])
+            if not user.exists():
+                return Response('3. Invalid company supplied / internshipName already exists',
+                                status.HTTP_401_UNAUTHORIZED)
+            # print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_id = user_serializer['id']
+            # print('2. mentor_id: ', mentor_id)
+            # Check if the user is a mentor:
+            mentor = CompanyMentor.objects.filter(user_id=mentor_id)
+        except:
+            return Response('4. Invalid company supplied / internshipName already exists', status.HTTP_401_UNAUTHORIZED)
+
+        # "mentor": "string"
         # print("3. mentor_id: ", mentor_id)
-        # internship = InternshipDetails.objects.filter(pk=internship.pk)
-        # internship_serializer = CreateInternshipSerializer(internship, many=True)
+        internship = InternshipDetails.objects.filter(pk=internship.pk)
+        internship_serializer = CreateInternshipSerializer(internship, many=True)
         # print("3. internship_serializer: ", internship_serializer)
-        # internship_serializer = list(internship_serializer.data)
-        # internship_serializer = internship_serializer[0]
-        # internship_id= internship_serializer['id']
-        #
-        # internshipAndMentor = InternshipAndMentor.objects.create(
-        #     internship_id=internship_id,
-        #     mentor_id=mentor_id
-        # )
+        internship_serializer = list(internship_serializer.data)
+        internship_serializer = internship_serializer[0]
+        internship_id= internship_serializer['id']
+
+        internshipAndMentor = InternshipAndMentor.objects.create(
+            internship_id=internship_id,
+            mentor_id=mentor_id
+        )
 
         return Response(
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)
@@ -943,10 +943,12 @@ class PostUploadReportByIntern(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
 
-    def post(self, request):
+    def post(self, request, username):
+        # print('uploadReport: ', username)
         try:
             users = User.objects.all()
-            user = users.filter(username=request.data['username'])
+            user = users.filter(username = username)
+            # user = users.filter(username=request.data['username'])
             if not user.exists():
                 return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
             # print("1. user: ", user)
@@ -996,11 +998,11 @@ class PostUploadReportByMentor(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
 
-    def post(self, request):
+    def post(self, request, username, intern):
         try:
             users = User.objects.all()
             # mentor:
-            user = users.filter(username=request.data['username'])
+            user = users.filter(username=username)
             if not user.exists():
                 return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
             # print("1. user: ", user)
@@ -1013,7 +1015,7 @@ class PostUploadReportByMentor(generics.GenericAPIView):
             mentor = CompanyMentor.objects.filter(user_id=mentor_id)
             # print('3. mentor: ', mentor)
             # intern:
-            user = users.filter(username=request.data['intern'])
+            user = users.filter(username=intern)
             if not user.exists():
                 return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
             # print("4. user: ", user)
