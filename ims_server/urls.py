@@ -46,7 +46,10 @@ react_routes = [
     'createProgram',
     'approveHours',
     'programs',
-    'approveCandidates',
+    'approveMentorCandidates',
+    'approveCompanyRepCandidates',
+    'uploadReport',
+    'uploadReportMentor',
     'forgetPass', #?
     'forgetPassEmail', #?
    ]
