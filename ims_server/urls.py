@@ -62,7 +62,7 @@ urlpatterns = [
     path('activePrograms', program_views.get_active_program),
     path('candidate/internshipsPriorities', internship_views.PostInternshipsPrioritiesByCandidate.as_view()),
     path('intern/uploadReport/<username>', internship_views.PostUploadReportByIntern.as_view()),
-    path('mentor/uploadReport', internship_views.PostUploadReportByMentor.as_view()),
+    path('mentor/<username>/uploadReport/<intern>', internship_views.PostUploadReportByMentor.as_view()),
     # path('api/auth/', include('knox.urls')),
 
 

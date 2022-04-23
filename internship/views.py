@@ -998,11 +998,11 @@ class PostUploadReportByMentor(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
 
-    def post(self, request):
+    def post(self, request, username, intern):
         try:
             users = User.objects.all()
             # mentor:
-            user = users.filter(username=request.data['username'])
+            user = users.filter(username=username)
             if not user.exists():
                 return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
             # print("1. user: ", user)
@@ -1015,7 +1015,7 @@ class PostUploadReportByMentor(generics.GenericAPIView):
             mentor = CompanyMentor.objects.filter(user_id=mentor_id)
             # print('3. mentor: ', mentor)
             # intern:
-            user = users.filter(username=request.data['intern'])
+            user = users.filter(username=intern)
             if not user.exists():
                 return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
             # print("4. user: ", user)
