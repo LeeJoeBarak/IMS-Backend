@@ -1,0 +1,164 @@
+(venv-march5) D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend>pytest
+========================================================================================================= test session starts =========================================================================================================
+platform win32 -- Python 3.8.5, pytest-6.2.3, py-1.11.0, pluggy-0.13.1
+django: settings: ims_server.settings (from ini)
+rootdir: D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend, configfile: pytest.ini
+plugins: django-4.5.2
+collected 1 item                                                                                                                                                                                                                       
+
+internship\tests\test_models.py F                                                                                                                                                                                                [100%]
+
+============================================================================================================== FAILURES ===============================================================================================================
+____________________________________________________________________________________________________ test_internship_details_model ____________________________________________________________________________________________________
+
+    @pytest.mark.django_db
+    def test_internship_details_model():
+>       internship_details = InternshipDetails(internshipName='Embedded intern', program=2020, companyName='GM')
+
+internship\tests\test_models.py:23:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv-march5\lib\site-packages\django\db\models\base.py:489: in __init__
+    _setattr(self, field.name, rel_obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <django.db.models.fields.related_descriptors.ForwardManyToOneDescriptor object at 0x000002321B091F70>, instance = <InternshipDetails: InternshipDetails object (None)>, value = 2020
+
+    def __set__(self, instance, value):
+        """
+        Set the related instance through the forward relation.
+
+        With the example above, when setting ``child.parent = parent``:
+
+        - ``self`` is the descriptor managing the ``parent`` attribute
+        - ``instance`` is the ``child`` instance
+        - ``value`` is the ``parent`` instance on the right of the equal sign
+        """
+        # An object must be an instance of the related class.
+        if value is not None and not isinstance(value, self.field.remote_field.model._meta.concrete_model):
+>           raise ValueError(
+                'Cannot assign "%r": "%s.%s" must be a "%s" instance.' % (
+                    value,
+                    instance._meta.object_name,
+                    self.field.name,
+                    self.field.remote_field.model._meta.object_name,
+                )
+E               ValueError: Cannot assign "2020": "InternshipDetails.program" must be a "Program" instance.
+
+venv-march5\lib\site-packages\django\db\models\fields\related_descriptors.py:215: ValueError
+========================================================================================================== warnings summary ===========================================================================================================
+venv-march5\lib\site-packages\pyreadline\py3k_compat.py:8
+  d:\ideaprojects\sise\final_project\ims-backend\venv-march5\lib\site-packages\pyreadline\py3k_compat.py:8: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Pyt
+hon 3.3, and in 3.9 it will stop working
+    return isinstance(x, collections.Callable)
+
+venv-march5\lib\site-packages\_pytest\config\__init__.py:1233
+  d:\ideaprojects\sise\final_project\ims-backend\venv-march5\lib\site-packages\_pytest\config\__init__.py:1233: PytestConfigWarning: Unknown config option: pythonpath
+
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+======================================================================================================= short test summary info =======================================================================================================
+FAILED internship/tests/test_models.py::test_internship_details_model - ValueError: Cannot assign "2020": "InternshipDetails.program" must be a "Program" instance.
+==================================================================================================== 1 failed, 2 warnings in 3.39s ====================================================================================================
+
+(venv-march5) D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend>python manage.py test
+Found 0 test(s).
+System check identified no issues (0 silenced).
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK
+
+(venv-march5) D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend>
+
+
+############################################################################################################################################
+(venv-march5) D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend>pytest
+========================================================================================================= test session starts =========================================================================================================
+platform win32 -- Python 3.8.5, pytest-6.2.3, py-1.11.0, pluggy-0.13.1
+django: settings: ims_server.settings (from ini)
+rootdir: D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend, configfile: pytest.ini
+plugins: django-4.5.2
+collected 2 items
+
+internship\tests\test_models.py F                                                                                                                                                                                                [ 50%]
+internship\tests\test_views.py E                                                                                                                                                                                                 [100%]
+
+=============================================================================================================== ERRORS ================================================================================================================
+______________________________________________________________________________________________ ERROR at setup of test_create_internship _______________________________________________________________________________________________
+file D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend\internship\tests\test_views.py, line 14
+  @pytest.mark.django_db
+  def test_create_internship(self):
+E       fixture 'self' not found
+>       available fixtures: _dj_autoclear_mailbox, _django_clear_site_cache, _django_db_helper, _django_db_marker, _django_set_urlconf, _django_setup_unittest, _fail_for_invalid_template_variable, _live_server_helper, _template_stri
+ng_if_invalid_marker, admin_client, admin_user, async_client, async_rf, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, client, db, django_assert_max_num_queries, django_assert_num_queries, django_capture_on_commit_callback
+s, django_db_blocker, django_db_createdb, django_db_keepdb, django_db_modify_db_settings, django_db_modify_db_settings_parallel_suffix, django_db_modify_db_settings_tox_suffix, django_db_modify_db_settings_xdist_suffix, django_db_re
+set_sequences, django_db_serialized_rollback, django_db_setup, django_db_use_migrations, django_mail_dnsname, django_mail_patch_dns, django_test_environment, django_user_model, django_username_field, doctest_namespace, live_server,
+mailoutbox, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rf, settings, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, transactional_db
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend\internship\tests\test_views.py:14
+============================================================================================================== FAILURES ===============================================================================================================
+____________________________________________________________________________________________________ test_internship_details_model ____________________________________________________________________________________________________
+
+    @pytest.mark.django_db
+    def test_internship_details_model():
+>       program = Program.objects.get(program='2020')
+
+internship\tests\test_models.py:25:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+venv-march5\lib\site-packages\django\db\models\manager.py:85: in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <QuerySet []>, args = (), kwargs = {'program': '2020'}, clone = <QuerySet []>, limit = 21, num = 0
+
+    def get(self, *args, **kwargs):
+        """
+        Perform the query and return a single object matching the given
+        keyword arguments.
+        """
+        if self.query.combinator and (args or kwargs):
+            raise NotSupportedError(
+                'Calling QuerySet.get(...) with filters after %s() is not '
+                'supported.' % self.query.combinator
+            )
+        clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+        if self.query.can_filter() and not self.query.distinct_fields:
+            clone = clone.order_by()
+        limit = None
+        if not clone.query.select_for_update or connections[clone.db].features.supports_select_for_update_with_limit:
+            limit = MAX_GET_RESULTS
+            clone.query.set_limits(high=limit)
+        num = len(clone)
+        if num == 1:
+            return clone._result_cache[0]
+        if not num:
+>           raise self.model.DoesNotExist(
+                "%s matching query does not exist." %
+                self.model._meta.object_name
+            )
+E           program.models.Program.DoesNotExist: Program matching query does not exist.
+
+venv-march5\lib\site-packages\django\db\models\query.py:439: DoesNotExist
+========================================================================================================== warnings summary ===========================================================================================================
+venv-march5\lib\site-packages\pyreadline\py3k_compat.py:8
+  d:\ideaprojects\sise\final_project\ims-backend\venv-march5\lib\site-packages\pyreadline\py3k_compat.py:8: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Pyt
+hon 3.3, and in 3.9 it will stop working
+    return isinstance(x, collections.Callable)
+
+venv-march5\lib\site-packages\_pytest\config\__init__.py:1233
+  d:\ideaprojects\sise\final_project\ims-backend\venv-march5\lib\site-packages\_pytest\config\__init__.py:1233: PytestConfigWarning: Unknown config option: pythonpath
+
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+======================================================================================================= short test summary info =======================================================================================================
+FAILED internship/tests/test_models.py::test_internship_details_model - program.models.Program.DoesNotExist: Program matching query does not exist.
+ERROR internship/tests/test_views.py::test_create_internship
+=============================================================================================== 1 failed, 2 warnings, 1 error in 3.18s ================================================================================================
+
+(venv-march5) D:\IdeaProjects\SISE\FINAL_PROJECT\IMS-Backend>
+
+############################################################################################################################################
