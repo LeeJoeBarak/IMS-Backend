@@ -53,6 +53,7 @@ urlpatterns = [
     path('programManager/<program>/<companyName>/<internshipName>/nominees',
          internship_views.get_nominees_passed_company_interview),
     path('intern/getHours/<username>', internship_views.get_intern_hours),
+    path('companies/<program>', internship_views.get_companies_by_program),
     path('companyRep/<username>/candidates/<program>', internship_views.get_candidates_by_program_by_companyRep),
     path('mentor/<username>/candidates/<program>', internship_views.get_candidates_by_program_by_mentor),
     path('mentor/getInterns/<username>', internship_views.get_interns_mentor),

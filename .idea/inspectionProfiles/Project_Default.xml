@@ -154,6 +154,8 @@
           <option value="internship.models.AssignmentIntern.*" />
           <option value="internship.models.InternshipAndMentor.*" />
           <option value="internship.models.InternshipAndIntern.*" />
+          <option value="internship.models.MentorReport.objects" />
+          <option value="internship.models.InternReport.objects" />
         </list>
       </option>
     </inspection_tool>
