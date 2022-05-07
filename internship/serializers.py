@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-import internship
 from .models import InternshipDetails, Priority, HoursReport, AssignmentIntern, InternshipAndMentor, InternshipAndIntern
 
 
