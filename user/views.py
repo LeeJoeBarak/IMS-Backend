@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 # from rest_framework import status
 from django.contrib.auth.models import User
 # from django.contrib.auth.signals import user_logged_in, user_logged_out
+from rest_framework.status import HTTP_404_NOT_FOUND
+
 from help_fanctions import student_status
 from internship.models import AssignmentIntern, InternshipDetails, HoursReport
 from internship.serializers import AssignmentInternSerializer, InternshipsSerializer, \
@@ -23,7 +25,8 @@ from .models import Company, ProgramManager, Student, CompanyMentor, CompanyRepr
 
 from rest_framework.response import Response
 
-from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer, MentorSerializer
+from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer, MentorSerializer, \
+    CompanyRepresentativeSerializer
 
 
 # GET /companies
@@ -241,6 +244,59 @@ def get_details_about_students_by_program(request, program):
 @api_view(['GET'])
 def get_mentors_by_company(request, company):
     if request.method == 'GET':
+        mentor_details= []
+        company_obj = Company.objects.filter(companyName=company)
+        companyMentors_list = CompanyMentor.objects.filter(company_id=company)
+        companyMentors_serializer = MentorSerializer(companyMentors_list, many=True)
+        companyMentors_serializer = list(companyMentors_serializer.data)
+        for mentor in companyMentors_serializer:
+            users = User.objects.all()
+            user = users.filter(pk=mentor['user_id'])
+            # print(user)
+            user_serializer = UserSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            mentor_detail = {
+                "firstName": user_serializer['first_name'],
+                "lastName": user_serializer['last_name'],
+                "username": user_serializer['username']
+            }
+            mentor_details.append(mentor_detail)
+
+        return JsonResponse(mentor_details, safe=False)
+
+
+# GET /mentors/{companyRep}:
+# [
+#     {
+#         "username": "string",
+#         "firstName": "string",
+#         "lastName": "string"
+#     }
+# ]
+@api_view(['GET'])
+def get_mentors_by_companyRep(request, companyRep):
+    if request.method == 'GET':
+        try:
+            # check if the username is of a real CompanyRepresentative
+            users = User.objects.all()
+            user = users.filter(username=companyRep)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            companyRep_id = user_serializer['id']
+            # print("1. companyRep_id: ", companyRep_id)
+            # check if the user is a mentor:
+            companyRep = CompanyRepresentative.objects.filter(user_id=companyRep_id)
+            # print("2. companyRep: ", companyRep)
+        except:
+            return Response('companyRep not found', status=HTTP_404_NOT_FOUND)
+        # get company's CompanyRepresentative:
+        # print("2. companyRep: ", companyRep)
+        companyRepresentative = CompanyRepresentativeSerializer(companyRep, many=True)
+        companyRepresentative = list(companyRepresentative.data)
+        companyRepresentative = companyRepresentative[0]
+        company = companyRepresentative['companyName']
         mentor_details= []
         company_obj = Company.objects.filter(companyName=company)
         companyMentors_list = CompanyMentor.objects.filter(company_id=company)
