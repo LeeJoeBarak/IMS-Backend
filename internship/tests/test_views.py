@@ -11,22 +11,7 @@ from rest_framework import status
 from django.urls import reverse
 import json
 
-#
-# class AccountTests(APITestCase):
-#     def test_create_account(self):
-#         """
-#         Ensure we can create a new account object.
-#         """
-#         print("AccountTests TEST TEST TEST TEST TEST TEST ")
 
-# POST /programManager/createInternship:
-# {pip install pytest pytest-django
-#     "program": "string",
-#     "company": "string",
-#     "internshipName": "string",
-#     "about": "string",
-#     "requirements": "string"
-# }
 class TestPostCreateInternshipByProgramManager(APITestCase):
     # 1. logged in with request.data['program']'s manager credentials:
     # 1.1 e.g: check that PM of program 2022 can't open internship in program 2030
