@@ -1,9 +1,0 @@
-server.cert
-server.key
-requirements.txt
-
-*__pycache__/*.pyc
-*__pycache__*
-
-build
-.idea
