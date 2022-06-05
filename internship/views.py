@@ -18,6 +18,7 @@ from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializ
 from .serializers import InternshipsSerializer, CreateInternshipSerializer, InternshipIdSerializer, \
     InternshipsPrioritiesByCandidateSerializer, HoursReportSerializer, InternshipAndMentorSerializer, \
     AssignmentInternSerializer, InternshipAndInternSerializer, InternshipsFullSerializer
+
 # from .serializers import InternshipsSerializer, NewInternshipSerializer, InternshipsPrioritiesByCandidateSerializer
 from .models import Priority, InternshipDetails, AssignmentIntern, HoursReport, InternshipAndMentor, \
     InternshipAndIntern, InternReport, MentorReport
@@ -448,6 +449,27 @@ def get_candidates_by_program_by_mentor(request, username, program):
         return JsonResponse(students_details, safe=False)
 
 
+# GET /companies/{program}
+# [
+#     "string"
+# ]
+@api_view(['GET'])
+def get_companies_by_program(request, program):
+    if request.method == 'GET':
+        try:
+            program_id = Program.objects.get(pk=program)
+            # print("1. program_id: ", program_id)
+        except:
+            return Response('program not found', status=HTTP_404_NOT_FOUND)
+
+        company_list = InternshipDetails.objects.values_list('companyName_id', flat=True).order_by(
+            'companyName_id').filter(program=program)
+        companies = list(company_list)
+        companies = set(companies)
+        companies = list(companies)
+
+        return JsonResponse(companies, safe=False)
+
 
 # POST /programManager/createInternship:
 # {
@@ -514,7 +536,7 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
         # print("3. internship_serializer: ", internship_serializer)
         internship_serializer = list(internship_serializer.data)
         internship_serializer = internship_serializer[0]
-        internship_id= internship_serializer['id']
+        internship_id = internship_serializer['id']
 
         internshipAndMentor = InternshipAndMentor.objects.create(
             internship_id=internship_id,
@@ -610,7 +632,7 @@ class PostCreateInternshipByCompanyRep(generics.GenericAPIView):
         # print("3. internship_serializer: ", internship_serializer)
         internship_serializer = list(internship_serializer.data)
         internship_serializer = internship_serializer[0]
-        internship_id= internship_serializer['id']
+        internship_id = internship_serializer['id']
 
         internshipAndMentor = InternshipAndMentor.objects.create(
             internship_id=internship_id,
@@ -1050,7 +1072,7 @@ class PostUploadReportByIntern(generics.GenericAPIView):
         # print('uploadReport: ', username)
         try:
             users = User.objects.all()
-            user = users.filter(username = username)
+            user = users.filter(username=username)
             # user = users.filter(username=request.data['username'])
             if not user.exists():
                 return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
