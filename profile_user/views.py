@@ -9,7 +9,7 @@ from rest_framework.status import HTTP_404_NOT_FOUND
 from internship.models import InternshipDetails, Priority
 from internship.serializers import InternshipsFullSerializer, InternshipsPrioritiesByCandidateSerializer
 from profile_user.models import StudentProfile, CompanyProfile
-from profile_user.serializers import StudentProfileSerializer
+from profile_user.serializers import StudentProfileSerializer, CompanyProfileSerializer
 from program.models import Program, StudentAndProgram
 from program.serializers import ProgramNameSerializer, StudentAndProgramSerializers
 from user.models import Company, CompanyRepresentative, Student, CompanyMentor
@@ -73,6 +73,8 @@ def get_student_profile(request, username):
             "gradesSheet": student_profile_serializer['gradesSheet']
         }
         return JsonResponse(student_details, safe=False)
+
+
 
 
 # /student/createProfile:
@@ -165,3 +167,38 @@ class PostCreateCompanyProfile(generics.GenericAPIView):
         company_profile.save()
 
         return Response(content_type='successful create a profile to the company', status=status.HTTP_200_OK)
+
+
+# GET /company/{companyName}
+# {
+#     "companyName": "string",
+#     "yearEstablish": 0,
+#     "workersAmount": 0,
+#     "location": "string",
+#     "about": "string",
+#     "linkedinLink": "string"
+# }
+@api_view(['GET'])
+def get_company_profile(request, companyName):
+    if request.method == 'GET':
+        try:
+            company = Company.objects.filter(pk=companyName)
+            company_profile = CompanyProfile.objects.filter(companyName_id=company[0])
+            # print("1. company_profile: ", company_profile)
+            company_profile_serializer = CompanyProfileSerializer(company_profile, many=True)
+            company_profile_serializer = list(company_profile_serializer.data)
+            company_profile_serializer = company_profile_serializer[0]
+            # print("2. student_profile_serializer: ", student_profile_serializer)
+        except:
+            return Response('Invalid company name supplied', status=status.HTTP_401_UNAUTHORIZED)
+
+        company_details = {
+            "companyName": companyName,
+            "yearEstablish": company_profile_serializer['yearEstablish'],
+            "workersAmount": company_profile_serializer['workersAmount'],
+            "linkedinLink": company_profile_serializer['linkedinLink'],
+            "location": company_profile_serializer['location'],
+            "about": company_profile_serializer['about'],
+
+        }
+        return JsonResponse(company_details, safe=False)

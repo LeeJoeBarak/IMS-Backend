@@ -59,6 +59,7 @@ urlpatterns = [
     path('mentor/getInterns/<username>', internship_views.get_interns_mentor),
     # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
     path('student/profile/<username>', profile_views.get_student_profile),
+    path('company/<companyName>', profile_views.get_company_profile),
     path('student/createProfile', profile_views.PostCreateStudentProfile.as_view()),
     path('companyRep/createCompanyProfile', profile_views.PostCreateCompanyProfile.as_view()),
     path('prioritiesAmount/<program>', program_views.get_priorities_amount_by_program),
