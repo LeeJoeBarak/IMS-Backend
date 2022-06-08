@@ -50,7 +50,7 @@ class CompanyProfile(models.Model):
     # "location": "string",
     # "about": "string"
 
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    companyName = models.OneToOneField(Company, on_delete=models.CASCADE)
     yearEstablish = models.CharField(max_length=20, default='10.10.2010')
     workersAmount = models.PositiveIntegerField(default=1, blank=True, null=True)
     linkedinLink = models.URLField(max_length=200, blank=True, null=True)

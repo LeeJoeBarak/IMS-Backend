@@ -37,6 +37,17 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = ('companyName',)
 
 
+class CompanyFullSerializer(serializers.ModelSerializer):
+    #     "companyName": "string",
+    #     "yearEstablish": 0,
+    #     "workersAmount": 0,
+    #     "location": "string",
+    #     "about": "string"
+    class Meta:
+        model = Company
+        fields = ('companyName', 'yearEstablish', 'workersAmount', 'location', 'about')
+
+
 class ProgramSerializer(serializers.ModelSerializer):
     class Meta:
         model = Program
