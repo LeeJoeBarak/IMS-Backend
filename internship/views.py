@@ -874,8 +874,6 @@ class SetStatusByMentor(generics.GenericAPIView):
 
         return Response(
             content_type='successful set the student status', status=status.HTTP_200_OK)
-
-
 # POST /setInterns:
 # {
 #     "programManager_username":"string"
