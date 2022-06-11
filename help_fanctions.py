@@ -44,6 +44,40 @@ reportByMentor_storage = FileSystemStorage(location='./data/')
 def save_to_path(path):
     return os.path.join(settings.LOCAL_FILE_DIR, path)
 
+
+# def get_program_id_by_student(username):
+#     users = User.objects.all()
+#     user = users.filter(username=username)
+#     # print("1. user: ", user)
+#     user_serializer = UserDetailsSerializer(user, many=True)
+#     user_serializer = list(user_serializer.data)
+#     user_serializer = user_serializer[0]
+#     Student_id = user_serializer['id']
+#     # print('2. Student_id: ', Student_id)
+#     program = StudentAndProgram.objects.filter(student_id=Student_id)
+#     program_serializer = StudentAndProgramSerializers(program, many=True)
+#     program_serializer = list(program_serializer.data)
+#     program_serializer = program_serializer[0]
+#     program_id = program_serializer['program_id']
+#     # print('3. program_id: ', program_id)
+#     return program_id
+
+
+# def get_internship_id(internshipName, program_id, companyName):
+#     internship_obj = InternshipDetails.objects.filter(internshipName=internshipName,
+#                                                       program_id=program_id,
+#                                                       companyName_id=companyName)
+#     # print('4. internship_obj: ', internship_obj)
+#     internship_serializer = InternshipIdSerializer(internship_obj, many=True)
+#     # print('5. internship_serializer: ', internship_serializer.data)
+#     internship_serializer = list(internship_serializer.data)
+#     # print('6. internship_serializer: ', internship_serializer)
+#     internship_serializer = internship_serializer[0]
+#     # print('7. internship_serializer: ', internship_serializer)
+#     internship_id = internship_serializer['id']
+#     return internship_id
+
+
 # def cv_path():
 #     return os.path.join(settings.LOCAL_FILE_DIR, 'data\cv')
 

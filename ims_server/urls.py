@@ -46,6 +46,7 @@ urlpatterns = [
     path('companyRep/createInternship', internship_views.PostCreateInternshipByCompanyRep.as_view()),
     path('programManager/createInternship', internship_views.PostCreateInternshipByProgramManager.as_view()),
     path('assignIntern', internship_views.UpdateStatusInternshipByManager.as_view()),
+    path('setInterns', internship_views.SetInternsToInternship.as_view()),
     path('companyRep/setStatus', internship_views.SetStatusByCompanyRep.as_view()),
     path('mentor/setStatus', internship_views.SetStatusByMentor.as_view()),
     path('intern/hoursReport', internship_views.HoursReportByIntern.as_view()),
