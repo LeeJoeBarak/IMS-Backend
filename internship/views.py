@@ -697,11 +697,22 @@ class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
             return Response('Invalid username supplied (not exist)', status.HTTP_400_BAD_REQUEST)
 
         for i, val in enumerate(internshipName_array):
-            priority = Priority.objects.create(
-                internship_id=val,
-                Student_id=Student_id,
-                student_priority_number=i + 1,
-            )
+            # check if already priority exist, if not - create:
+            # we do this check to save status_decision_by_company.
+            try:
+                # print('10. Student_id: ', Student_id)
+                # print('11. internship_id: ', val)
+                priority = Priority.objects.get(Student_id=Student_id, internship_id=val)
+                # print('12. priority: ', priority)
+                priority.student_priority_number = i + 1
+                priority.save()
+            except:
+                priority = Priority.objects.create(
+                    internship_id=val,
+                    Student_id=Student_id,
+                    student_priority_number=i + 1,
+                )
+                print('13. priority: ', priority)
 
         return Response(content_type='successful saved priorities', status=status.HTTP_200_OK)
 
@@ -826,9 +837,12 @@ class SetStatusByMentor(generics.GenericAPIView):
     permission_classes = []
 
     def post(self, request):
+        # print("0. request.data: ", request.data)
         try:
+            # print("0. request.data: ", request.data)
             users = User.objects.all()
             user = users.filter(username=request.data['username'])
+            # print("1. user: ", user)
             user_serializer = UserDetailsSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
@@ -839,7 +853,7 @@ class SetStatusByMentor(generics.GenericAPIView):
             for a in request.data['approved']:
                 users = User.objects.all()
                 user = users.filter(username=a['username'])
-                # print("1. user: ", user)
+                # print("2. user: ", user)
                 user_serializer = UserDetailsSerializer(user, many=True)
                 user_serializer = list(user_serializer.data)
                 user_serializer = user_serializer[0]
@@ -855,7 +869,7 @@ class SetStatusByMentor(generics.GenericAPIView):
                 p.status_decision_by_company = help_fanctions.student_status_for_internship[1]
                 p.save()
         except:
-            return Response('Invalid username\companyName\internshipName\studentsName supplied',
+            return Response('Invalid username\companyName\internshipName\studentsName supplied - except',
                             status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(
