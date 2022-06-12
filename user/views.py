@@ -154,12 +154,9 @@ def get_details_about_students_by_program(request, program):
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
             status = student_serializer['status']
-            # print("1. student_id: ", student_id)
-
             if status == student_status[2]:
                 internship = AssignmentIntern.objects.filter(student_id=student_id)
                 internship_serializer = AssignmentInternSerializer(internship, many=True)
-                # print("2. internship_serializer: ", internship_serializer.data)
                 internship_serializer = list(internship_serializer.data)
 
                 internship_serializer = internship_serializer[0]

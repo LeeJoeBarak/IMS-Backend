@@ -18,6 +18,7 @@ from django.http import HttpResponse
 BASE_DIR = Path(__file__).resolve().parent.parent
 index_file_path = os.path.join(BASE_DIR, 'build', 'index.html')
 
+
 def react(request):
     try:
         print(index_file_path)
@@ -26,9 +27,9 @@ def react(request):
     except FileNotFoundError:
         print('error!!')
 
+
 router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
-
 
 urlpatterns = [
     # path('', react, name="react"),
@@ -80,6 +81,5 @@ urlpatterns = [
     # logout:
     path('users/logout', LogoutAPI.as_view()),
     path('users/changePsw', UpdatePassword.as_view()),
-
 
 ]

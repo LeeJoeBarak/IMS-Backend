@@ -354,7 +354,6 @@ def get_candidates_by_program_by_mentor(request, username, program):
             mentor_id = user_serializer['id']
             # check if the user is a mentor:
             mentor = CompanyMentor.objects.filter(user_id=mentor_id)
-            # print("2. companyRep: ", companyRep)
         except:
             return Response('mentor not found', status=HTTP_404_NOT_FOUND)
         # get company's CompanyRepresentative:
@@ -365,7 +364,6 @@ def get_candidates_by_program_by_mentor(request, username, program):
         internships = InternshipDetails.objects.filter(program_id=program, companyName_id=company)
         internships_serializer = InternshipsFullSerializer(internships, many=True)
         internships_serializer = list(internships_serializer.data)
-
         for internship in internships_serializer:
             students_priority = Priority.objects.filter(internship_id=internship['id'])
             students_priority_serializer = InternshipsPrioritiesByCandidateSerializer(students_priority, many=True)
@@ -479,8 +477,6 @@ class PostCreateInternshipByProgramManager(generics.GenericAPIView):
             internship_id=internship_id,
             mentor_id=mentor_id
         )
-
-        print('4. internshipAndMentor: ', internshipAndMentor)
 
         return Response(
             content_type='successful create a internship request', status=status.HTTP_201_CREATED)

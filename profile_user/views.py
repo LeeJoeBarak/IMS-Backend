@@ -94,7 +94,6 @@ class PostCreateStudentProfile(generics.GenericAPIView):
             student_profile = StudentProfile.objects.filter(student_id=student_id)
         except:
             return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
-        print('3. gradesSheet: ', request.data['gradesSheet'])
         student_profile = StudentProfile.objects.create(
             phone_number=request.data['phoneNumber'],
             birthdate=request.data['birthdate'],
