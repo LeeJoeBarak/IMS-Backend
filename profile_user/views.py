@@ -1,24 +1,13 @@
 from django.http import JsonResponse
-from django.shortcuts import render
 from rest_framework.decorators import api_view
-# from rest_framework.views import APIView
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.status import HTTP_404_NOT_FOUND
-
-from internship.models import InternshipDetails, Priority
-from internship.serializers import InternshipsFullSerializer, InternshipsPrioritiesByCandidateSerializer
 from profile_user.models import StudentProfile, CompanyProfile
 from profile_user.serializers import StudentProfileSerializer, CompanyProfileSerializer
-from program.models import Program, StudentAndProgram
-from program.serializers import ProgramNameSerializer, StudentAndProgramSerializers
-from user.models import Company, CompanyRepresentative, Student, CompanyMentor
-from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer, CompanySerializer, \
-    UserSerializer, StudentSerializer
+from user.models import Company, Student
+from user.serializer import UserDetailsSerializer, StudentSerializer
 from rest_framework.response import Response
-# from knox.models import AuthToken
-
-import help_fanctions
 from rest_framework import generics
 
 
@@ -37,7 +26,6 @@ from rest_framework import generics
 @api_view(['GET'])
 def get_student_profile(request, username):
     if request.method == 'GET':
-        students_details = []
         try:
             # check if the username is of a real CompanyRepresentative
             users = User.objects.all()
@@ -46,18 +34,13 @@ def get_student_profile(request, username):
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
             student_id = user_serializer['id']
-            # print("1. companyRep_id: ", student_id)
             # check if the user is a student:
-            student = Student.objects.filter(user_id=student_id)
-            # print("2. student: ", student)
+            Student.objects.filter(user_id=student_id)
 
-            # print("2. student: ", student)
             student_profile = StudentProfile.objects.filter(student_id=student_id)
-            # print("3. student_profile: ", student_profile)
             student_profile_serializer = StudentProfileSerializer(student_profile, many=True)
             student_profile_serializer = list(student_profile_serializer.data)
             student_profile_serializer = student_profile_serializer[0]
-            # print("3. student_profile_serializer: ", student_profile_serializer)
         except:
             return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
 
@@ -73,8 +56,6 @@ def get_student_profile(request, username):
             "gradesSheet": student_profile_serializer['gradesSheet']
         }
         return JsonResponse(student_details, safe=False)
-
-
 
 
 # /student/createProfile:
@@ -99,12 +80,10 @@ class PostCreateStudentProfile(generics.GenericAPIView):
             user = users.filter(username=request.data['username'])
             if not user.exists():
                 return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
-            print("1. user: ", user)
             user_serializer = UserDetailsSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
             student_id = user_serializer['id']
-            print('2. student_id: ', student_id)
             student = Student.objects.filter(user_id=student_id)
             student_serializer = StudentSerializer(student, many=True)
             student_serializer = list(student_serializer.data)
@@ -115,7 +94,6 @@ class PostCreateStudentProfile(generics.GenericAPIView):
             student_profile = StudentProfile.objects.filter(student_id=student_id)
         except:
             return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
-        print('3. gradesSheet: ', request.data['gradesSheet'])
         student_profile = StudentProfile.objects.create(
             phone_number=request.data['phoneNumber'],
             birthdate=request.data['birthdate'],
@@ -147,16 +125,14 @@ class PostCreateCompanyProfile(generics.GenericAPIView):
     def post(self, request):
         try:
             company_name = request.data['companyName']
-            # print('0. company: ', company_name)
             company = Company.objects.filter(pk=company_name)
-            # print('1. company: ', company[0])
         except:
             return Response('Invalid company supplied', status.HTTP_401_UNAUTHORIZED)
         try:
             company_profile = CompanyProfile.objects.filter(pk=company_name)
         except:
             return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
-        print('2. satrt create company')
+        # create company:
         company_profile = CompanyProfile.objects.create(
             companyName_id=company,
             yearEstablish=request.data['yearEstablish'],
@@ -184,11 +160,9 @@ def get_company_profile(request, companyName):
         try:
             company = Company.objects.filter(pk=companyName)
             company_profile = CompanyProfile.objects.filter(companyName_id=company[0])
-            # print("1. company_profile: ", company_profile)
             company_profile_serializer = CompanyProfileSerializer(company_profile, many=True)
             company_profile_serializer = list(company_profile_serializer.data)
             company_profile_serializer = company_profile_serializer[0]
-            # print("2. student_profile_serializer: ", student_profile_serializer)
         except:
             return Response('Invalid company name supplied', status=status.HTTP_401_UNAUTHORIZED)
 

@@ -1,10 +1,6 @@
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-# from rest_framework.authtoken.admin import User
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
 from rest_framework import status
 from django.contrib.auth.models import User
 
@@ -14,9 +10,7 @@ from .serializers import PrioritiesAmountSerializer, HoursRequiredSerializer, Pr
     CreateProgramSerializer, ProgramsSerializer, ProgramManagerAndProgramSerializers
 from .models import Program, ProgramManagerAndProgram
 from rest_framework.response import Response
-from rest_framework import generics, permissions
-
-import help_fanctions
+from rest_framework import generics
 
 
 class InternshipsView(viewsets.ModelViewSet):
@@ -135,7 +129,7 @@ class PostCreateProgram(generics.GenericAPIView):
     permission_classes = []
     serializer_class = CreateProgramSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         # create program:
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
@@ -157,19 +151,3 @@ class PostCreateProgram(generics.GenericAPIView):
             content_type='successful open a program',
             status=status.HTTP_201_CREATED
         )
-
-# get_detail_about_program(detail = 'hoursRequired')
-
-# @api_view(['GET'])
-# def get_detail_about_program(request, program, detail):
-#     if request.method == 'GET':
-#         programs = Program.objects.all()
-#         programs = programs.filter(program=program)
-#
-#         if not programs.exists():
-#             return Response('program not found', status=status.HTTP_404_NOT_FOUND)
-#
-#         program_serializer = ProgramsSerializer(programs, many=True)
-#         data = list(program_serializer.data)
-#         data = data[0]
-#         return JsonResponse(data[detail], safe=False)

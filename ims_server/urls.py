@@ -10,7 +10,6 @@ from user.api import RegisterAPI, LoginAPI, LogoutAPI, RegisterCompanyRepAPI, \
     RegisterMentorAPI, RegisterProgramCoordinatorAPI, RegisterProgramManagerAPI, UpdatePassword
 from knox import views as knox_views
 from user.api import RegisterAPI, LoginAPI
-# from knox import views as knox_views
 from django.views.generic import TemplateView
 import os
 from pathlib import Path
@@ -19,13 +18,14 @@ from django.http import HttpResponse
 BASE_DIR = Path(__file__).resolve().parent.parent
 index_file_path = os.path.join(BASE_DIR, 'build', 'index.html')
 
+
 def react(request):
-    # return render(request, index_file_path)
     try:
         with open(index_file_path) as f:
             return HttpResponse(f.read())
     except FileNotFoundError:
         print('error loading react!')
+
 
 router = routers.DefaultRouter()
 router.register(r'internships', internship_views.InternshipsView, 'internships')
@@ -80,7 +80,6 @@ urlpatterns = [
     path('companyRep/<username>/candidates/<program>', internship_views.get_candidates_by_program_by_companyRep),
     path('mentor/<username>/candidates/<program>', internship_views.get_candidates_by_program_by_mentor),
     path('mentor/getInterns/<username>', internship_views.get_interns_mentor),
-    # path('programManager/createInternship', internship_views.PostCreateInternshipDetailsByProgramManager.as_view()),
     path('student/profile/<username>', profile_views.get_student_profile),
     path('company/<companyName>', profile_views.get_company_profile),
     path('student/createProfile', profile_views.PostCreateStudentProfile.as_view()),
@@ -93,8 +92,6 @@ urlpatterns = [
     path('candidate/internshipsPriorities', internship_views.PostInternshipsPrioritiesByCandidate.as_view()),
     path('intern/uploadReport/<username>', internship_views.PostUploadReportByIntern.as_view()),
     path('mentor/<username>/uploadReport/<intern>', internship_views.PostUploadReportByMentor.as_view()),
-    # path('api/auth/', include('knox.urls')),
-
 
     # register:
     path('users/register/student', RegisterAPI.as_view()),
@@ -111,5 +108,3 @@ urlpatterns = [
     re_path(r'^(%s)?$' % '|'.join(react_routes), TemplateView.as_view(template_name='index.html'))
 
 ]
-
-# urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]

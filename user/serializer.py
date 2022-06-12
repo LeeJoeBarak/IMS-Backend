@@ -1,13 +1,6 @@
 from rest_framework import serializers
-# from .models import CompanyRepresentative
-#
-#
-
-from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-
-# User Serializer
 from program.models import StudentAndProgram, Program
 from user.models import Student, Company, ProgramManager, CompanyRepresentative, CompanyMentor
 
@@ -59,8 +52,6 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ('user_id', 'status')
 
-
-# Register Serializer:
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
