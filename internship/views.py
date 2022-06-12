@@ -10,7 +10,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.status import HTTP_404_NOT_FOUND
 
-from program.models import Program, StudentAndProgram
+from program.models import Program, StudentAndProgram, ProgramManagerAndProgram
 from program.serializers import ProgramNameSerializer, StudentAndProgramSerializers
 from user.models import Company, CompanyRepresentative, Student, CompanyMentor
 from user.serializer import UserDetailsSerializer, CompanyRepresentativeSerializer, CompanySerializer, \
@@ -697,11 +697,22 @@ class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
             return Response('Invalid username supplied (not exist)', status.HTTP_400_BAD_REQUEST)
 
         for i, val in enumerate(internshipName_array):
-            priority = Priority.objects.create(
-                internship_id=val,
-                Student_id=Student_id,
-                student_priority_number=i + 1,
-            )
+            # check if already priority exist, if not - create:
+            # we do this check to save status_decision_by_company.
+            try:
+                # print('10. Student_id: ', Student_id)
+                # print('11. internship_id: ', val)
+                priority = Priority.objects.get(Student_id=Student_id, internship_id=val)
+                # print('12. priority: ', priority)
+                priority.student_priority_number = i + 1
+                priority.save()
+            except:
+                priority = Priority.objects.create(
+                    internship_id=val,
+                    Student_id=Student_id,
+                    student_priority_number=i + 1,
+                )
+                print('13. priority: ', priority)
 
         return Response(content_type='successful saved priorities', status=status.HTTP_200_OK)
 
@@ -826,9 +837,12 @@ class SetStatusByMentor(generics.GenericAPIView):
     permission_classes = []
 
     def post(self, request):
+        # print("0. request.data: ", request.data)
         try:
+            # print("0. request.data: ", request.data)
             users = User.objects.all()
             user = users.filter(username=request.data['username'])
+            # print("1. user: ", user)
             user_serializer = UserDetailsSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
@@ -839,7 +853,7 @@ class SetStatusByMentor(generics.GenericAPIView):
             for a in request.data['approved']:
                 users = User.objects.all()
                 user = users.filter(username=a['username'])
-                # print("1. user: ", user)
+                # print("2. user: ", user)
                 user_serializer = UserDetailsSerializer(user, many=True)
                 user_serializer = list(user_serializer.data)
                 user_serializer = user_serializer[0]
@@ -855,73 +869,98 @@ class SetStatusByMentor(generics.GenericAPIView):
                 p.status_decision_by_company = help_fanctions.student_status_for_internship[1]
                 p.save()
         except:
-            return Response('Invalid username\companyName\internshipName\studentsName supplied',
+            return Response('Invalid username\companyName\internshipName\studentsName supplied - except',
                             status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(
             content_type='successful set the student status', status=status.HTTP_200_OK)
 
 
-class AssignInternToInternship(generics.GenericAPIView):
+# POST /setInterns:
+# {
+#     "programManager_username":"string"
+#     "program": "string",
+#     "new_interns": [
+#         {
+#             "username": "string",
+#             "internship_id": "string"
+#         }
+#     ]
+# }
+class SetInternsToInternship(generics.GenericAPIView):
     authentication_classes = []
     permission_classes = []
 
     def post(self, request):
-        users = User.objects.all()
-        user = users.filter(username=request.data['username'])
-        if not user.exists():
-            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
-        # print("1. user: ", user)
-        user_serializer = UserDetailsSerializer(user, many=True)
-        user_serializer = list(user_serializer.data)
-        user_serializer = user_serializer[0]
-        Student_id = user_serializer['id']
-        # print('2. Student_id: ', Student_id)
-        program = StudentAndProgram.objects.filter(student_id=Student_id)
-        if not program.exists():
-            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
-        program_serializer = StudentAndProgramSerializers(program, many=True)
-        program_serializer = list(program_serializer.data)
-        program_serializer = program_serializer[0]
-        program_id = program_serializer['program_id']
-        # print('3. program_id: ', program_id)
-        internship_obj = InternshipDetails.objects.filter(internshipName=request.data['internshipName'],
-                                                          program_id=program_id,
-                                                          companyName_id=request.data['companyName'])
-        if not internship_obj.exists():
-            return Response('Invalid companyName\internshipName\studentName supplied', status=HTTP_404_NOT_FOUND)
-        internship_serializer = InternshipIdSerializer(internship_obj, many=True)
-        # print('5. internship_serializer: ', internship_serializer.data)
-        internship_serializer = list(internship_serializer.data)
-        # print('6. internship_serializer: ', internship_serializer)
-        internship_serializer = internship_serializer[0]
-        # print('7. internship_serializer: ', internship_serializer)
-        internship_id = internship_serializer['id']
+        try:
+            # check manager username:
+            users = User.objects.all()
+            user = users.filter(username=request.data['programManager_username'])
 
-        # Assign intern:
-        assignIntern = AssignmentIntern.objects.filter(student_id=Student_id, internship_id=internship_id, )
-        if assignIntern.exists():
-            return Response('The assignment intern already exist', status=HTTP_404_NOT_FOUND)
-        assignIntern = AssignmentIntern.objects.create(
-            student_id=Student_id,
-            internship_id=internship_id,
-        )
+            print("1. user: ", user)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            manager_id = user_serializer['id']
+            print('2. manager_id: ', manager_id)
+            # check program:
+            program = ProgramManagerAndProgram.objects.filter(programManager_id=manager_id,
+                                                              program=request.data['program'])
+            program_serializer = StudentAndProgramSerializers(program, many=True)
+            program_serializer = list(program_serializer.data)
+            program_serializer = program_serializer[0]
+            program_id = program_serializer['program_id']
+            print('3. program_id: ', program_id)
 
-        # update student status:
-        student = Student.objects.get(user_id=Student_id)
-        student.status = help_fanctions.student_status[2]
-        student.save()
+            # students:
+            for new_intern in request.data['new_interns']:
+                print('4. in loop ', new_intern)
+                users = User.objects.all()
+                user = users.filter(username=new_intern['username'])
+                print("5. user: ", user)
+                user_serializer = UserDetailsSerializer(user, many=True)
+                user_serializer = list(user_serializer.data)
+                user_serializer = user_serializer[0]
+                Student_id = user_serializer['id']
+                program = StudentAndProgram.objects.filter(program_id=request.data['program'], student_id=Student_id)
+                internship_obj = InternshipDetails.objects.filter(pk=new_intern['internship_id'])
 
-        # update internship isAssign:
-        internship = InternshipDetails.objects.get(id=internship_id)
-        # print('7. internship: ', internship)
-        # print('6. internship.isAssign: ', internship.isAssign)
-        internship.isAssign = True
-        # print('7. After internship.isAssign: ', internship.isAssign)
-        internship.save()
+                # Set intern:
+                assignIntern = InternshipAndIntern.objects.filter(
+                    intern_id=Student_id,
+                    internship_id=new_intern['internship_id'])
+                if assignIntern.exists():
+                    # return Response('The assignment intern already exist', status=HTTP_404_NOT_FOUND)
+                    continue
+                InternshipAndIntern.objects.create(intern_id=Student_id, internship_id=new_intern['internship_id'])
+
+                # 1. update student status:
+                student = Student.objects.get(user_id=Student_id)
+                student.status = help_fanctions.student_status[2]
+                student.save()
+                print('a. update student status')
+
+                # 2. update internship isAssign:
+                internship = InternshipDetails.objects.get(id=new_intern['internship_id'])
+                # print('7. internship: ', internship)
+                # print('6. internship.isAssign: ', internship.isAssign)
+                internship.isAssign = True
+                # print('7. After internship.isAssign: ', internship.isAssign)
+                internship.save()
+                print('b. update internship isAssign')
+
+                # 3. update program status:
+                program_obj = Program.objects.get(program=request.data['program'])
+                program_obj.status = "True"
+                program_obj.save()
+                print('c. update program status')
+
+        except:
+            return Response('Invalid manager username\student username\program\internship_id supplied',
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(
-            content_type='successful set the student to the intern', status=status.HTTP_201_CREATED)
+            content_type='successful set all the students to interns', status=status.HTTP_201_CREATED)
 
 
 # POST /intern/hoursReport:
@@ -1088,7 +1127,7 @@ class PostUploadReportByIntern(generics.GenericAPIView):
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
             # Check if the student is an intern:
-            student_serializer['status']
+            # student_serializer['status']
             # print('3. status: ', student_serializer['status'])
             if student_serializer['status'] != help_fanctions.student_status[2]:
                 return Response('Invalid username supplied', status=status.HTTP_401_UNAUTHORIZED)
@@ -1155,7 +1194,7 @@ class PostUploadReportByMentor(generics.GenericAPIView):
             student_serializer = list(student_serializer.data)
             student_serializer = student_serializer[0]
             # Check if the student is an intern:
-            student_serializer['status']
+            # student_serializer['status']
             # print('3. status: ', student_serializer['status'])
             if student_serializer['status'] != help_fanctions.student_status[2]:
                 return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)

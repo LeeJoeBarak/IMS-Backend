@@ -46,7 +46,7 @@ class Priority(models.Model):
                                                           max_length=100)
     student_priority_number = models.PositiveIntegerField(default=1)
 
-
+# check if we can delete this table
 class AssignmentIntern(models.Model):
     # {
     #     "username": "string",
