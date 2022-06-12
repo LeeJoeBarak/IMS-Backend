@@ -1,14 +1,6 @@
-# import tables
-# from django.shortcuts import render
-# from django.contrib.sessions.backends import db
 from django.http import JsonResponse
-# from django.shortcuts import render
-# from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
-# from rest_framework.views import APIView
-# from rest_framework import status
 from django.contrib.auth.models import User
-# from django.contrib.auth.signals import user_logged_in, user_logged_out
 from rest_framework.status import HTTP_404_NOT_FOUND
 
 from help_fanctions import student_status
@@ -22,10 +14,8 @@ from program.serializers import StudentAndProgramSerializers, CompanyMentorAndPr
     ProgramCoordinatorAndProgramSerializers
 from .models import Company, ProgramManager, Student, CompanyMentor, CompanyRepresentative, ProgramCoordinator, \
     SystemManager
-
 from rest_framework.response import Response
-
-from .serializer import CompanySerializer, UserDetailsSerializer, UserSerializer, StudentSerializer, MentorSerializer, \
+from .serializer import UserDetailsSerializer, UserSerializer, StudentSerializer, MentorSerializer, \
     CompanyRepresentativeSerializer
 
 
@@ -68,22 +58,15 @@ def get_program_managers(request):
 #     "userType": "string",
 #     "program": "string"
 # }
-
 def get_details_about_user_by_username(request, username):
     if request.method == 'GET':
         users = User.objects.all()
         user = users.filter(username=username)
-        # print(user)
         user_serializer = UserDetailsSerializer(user, many=True)
         user_serializer = list(user_serializer.data)
         user_serializer = user_serializer[0]
-        # print("user_serializer: ", user_serializer)
         first_name = user_serializer['first_name']
-        # print("user_serializer: ", user_serializer['first_name'])
-        # print("user_serializer: ", user_serializer['last_name'])
         user_id = user_serializer['id']
-        # print("user_serializer: ", user_serializer['id'])
-
         model = Student.objects.filter(user_id=user_id).first()
         if model is not None:
             program = StudentAndProgram.objects.filter(student_id=user_id).first()
@@ -116,7 +99,6 @@ def get_details_about_user_by_username(request, username):
 
                         if model is None:
                             model = SystemManager.objects.filter(user_id=user_id).first()
-                            # if model is not None:
                             return Response({
                                 "userType": model.__str__(),
                                 # "username": data['username'],
@@ -125,16 +107,13 @@ def get_details_about_user_by_username(request, username):
                             })
 
         if model is not None:
-            # user_logged_in.send(sender=user.__class__, request=request, user=user)
             if program is None:
                 program_id = ''
             else:
                 program_id = dataProgram.data['program_id']
             return Response({
                 "userType": model.__str__(),
-                # "username": data['username'],
                 "firstName": first_name,
-                # "session": newToken,
                 "program": program_id
             })
 
@@ -157,20 +136,15 @@ def get_details_about_students_by_program(request, program):
         details = []
         student_and_program = StudentAndProgram.objects.all()
         student_and_program = student_and_program.filter(program_id=program)
-        # print("1. student_and_program: ", student_and_program)
         student_and_program_serializer = StudentAndProgramSerializers(student_and_program, many=True)
         student_and_program_serializer = list(student_and_program_serializer.data)
-        # print("2. student_and_program_serializer: ", student_and_program_serializer)
         for student in student_and_program_serializer:
             student_id = student['student_id']
-            program_id = student['program_id']
             users = User.objects.all()
             user = users.filter(id=student_id)
-            # print(user)
             user_serializer = UserSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
-            # print("user_serializer: ", user_serializer)
             first_name = user_serializer['first_name']
             last_name = user_serializer['last_name']
             email = user_serializer['email']
@@ -201,21 +175,12 @@ def get_details_about_students_by_program(request, program):
                 hours = HoursReport.objects.filter(student_id=student_id)
                 hours_serializer = HoursReportTotalTimeSerializer(hours, many=True)
                 hours_serializer = list(hours_serializer.data)
-                # print("1. hours_serializer: ", hours_serializer)
-                total_hours = 0
                 totalSecs = 0
                 for hour in hours_serializer:
                     tm = hour['totalTime']
-                    # print("1. tm: ", tm)
-                    # total_hours += hour['totalTime']
                     timeParts = [int(s) for s in tm.split(':')]
-                    # print("2. timeParts: ", timeParts)
                     totalSecs += (timeParts[0] * 60 + timeParts[1])
-                    # print("3. totalSecs: ", totalSecs)
-                print("4. timeParts: ", timeParts)
                 hr, minute = divmod(totalSecs, 60)
-                # print("%d:%02d" % (hr, minute))
-
                 total_hours = "%d:%02d" % (hr, minute)
 
                 student_detail = {
@@ -239,20 +204,18 @@ def get_details_about_students_by_program(request, program):
         return Response(details)
 
 
-
 # /mentors/{company}:
 @api_view(['GET'])
 def get_mentors_by_company(request, company):
     if request.method == 'GET':
-        mentor_details= []
-        company_obj = Company.objects.filter(companyName=company)
+        mentor_details = []
+        Company.objects.filter(companyName=company)
         companyMentors_list = CompanyMentor.objects.filter(company_id=company)
         companyMentors_serializer = MentorSerializer(companyMentors_list, many=True)
         companyMentors_serializer = list(companyMentors_serializer.data)
         for mentor in companyMentors_serializer:
             users = User.objects.all()
             user = users.filter(pk=mentor['user_id'])
-            # print(user)
             user_serializer = UserSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
@@ -285,27 +248,23 @@ def get_mentors_by_companyRep(request, companyRep):
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
             companyRep_id = user_serializer['id']
-            # print("1. companyRep_id: ", companyRep_id)
             # check if the user is a mentor:
             companyRep = CompanyRepresentative.objects.filter(user_id=companyRep_id)
-            # print("2. companyRep: ", companyRep)
         except:
             return Response('companyRep not found', status=HTTP_404_NOT_FOUND)
         # get company's CompanyRepresentative:
-        # print("2. companyRep: ", companyRep)
         companyRepresentative = CompanyRepresentativeSerializer(companyRep, many=True)
         companyRepresentative = list(companyRepresentative.data)
         companyRepresentative = companyRepresentative[0]
         company = companyRepresentative['companyName']
-        mentor_details= []
-        company_obj = Company.objects.filter(companyName=company)
+        mentor_details = []
+        Company.objects.filter(companyName=company)
         companyMentors_list = CompanyMentor.objects.filter(company_id=company)
         companyMentors_serializer = MentorSerializer(companyMentors_list, many=True)
         companyMentors_serializer = list(companyMentors_serializer.data)
         for mentor in companyMentors_serializer:
             users = User.objects.all()
             user = users.filter(pk=mentor['user_id'])
-            # print(user)
             user_serializer = UserSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
@@ -317,12 +276,3 @@ def get_mentors_by_companyRep(request, companyRep):
             mentor_details.append(mentor_detail)
 
         return JsonResponse(mentor_details, safe=False)
-
-
-
-
-
-
-
-
-

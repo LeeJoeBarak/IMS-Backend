@@ -8,11 +8,6 @@ class InternshipsSerializer(serializers.ModelSerializer):
         model = InternshipDetails
         fields = ('program', 'companyName', 'internshipName', 'about', 'requirements')
 
-        # "companyName": "string",
-        # "internshipName": "string",
-        # "about": "string",
-        # "requirments": "string"
-
 
 class InternshipsFullSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,19 +26,6 @@ class CreateInternshipSerializer(serializers.ModelSerializer):
         model = InternshipDetails
         fields = ('id', 'program_id', 'internshipName', 'companyName_id', 'about', 'requirements', 'quantity')
 
-
-# class CreateInternshipSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = InternshipDetails
-#         fields = ('program_id', 'internshipName', 'companyName_id', 'about', 'requirements')
-
-
-# "username": "string",
-# "companyName": "string",
-# "internshipName": "string",
-# "about": "string",
-# "requirments": "string",
-# "mentor": "string"
 
 class InternshipsPrioritiesByCandidateSerializer(serializers.ModelSerializer):
     class Meta:

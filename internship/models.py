@@ -8,24 +8,6 @@ from program.models import Program
 from user.models import Company, CompanyMentor, Student
 
 
-# class Internship(models.Model):
-#     # todo: "username": "string",?????
-#     # "companyName": "string",
-#     # "internshipName": "string",
-#     # "about": "string",
-#     # "requirements": "string",
-#     # "mentor": "string"
-#     internshipName = models.CharField(max_length=120, primary_key=True)
-#     program = models.ForeignKey(Program, on_delete=models.CASCADE, default='')
-#     # program = models.OneToOneField(Program, on_delete=models.CASCADE)
-#     # companyRepresentative = models.ForeignKey(CompanyRepresentative, on_delete=models.CASCADE, default='')
-#     companyName = models.ForeignKey(Company, on_delete=models.CASCADE, default='')
-#     about = models.TextField(default="")
-#     requirements = models.TextField(default="")
-#     # mentor = models.ForeignKey(CompanyMentor, on_delete=models.CASCADE, default='')
-#     isAssign = models.BooleanField(default=False)
-
-
 class InternshipDetails(models.Model):
     internshipName = models.CharField(max_length=120, default='')
     program = models.ForeignKey(Program, on_delete=models.CASCADE, default='')
@@ -45,6 +27,7 @@ class Priority(models.Model):
     status_decision_by_program_manager = models.CharField(default=student_status_for_internship[0],
                                                           max_length=100)
     student_priority_number = models.PositiveIntegerField(default=1)
+
 
 # check if we can delete this table
 class AssignmentIntern(models.Model):

@@ -6,6 +6,8 @@
         <language minSize="217" name="Python" />
       </Languages>
     </inspection_tool>
+    <inspection_tool class="PyBroadExceptionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyMethodMayBeStaticInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
@@ -121,6 +123,7 @@
       <option name="ignoredErrors">
         <list>
           <option value="E722" />
+          <option value="W605" />
         </list>
       </option>
     </inspection_tool>
@@ -156,6 +159,7 @@
           <option value="internship.models.InternshipAndIntern.*" />
           <option value="internship.models.MentorReport.objects" />
           <option value="internship.models.InternReport.objects" />
+          <option value="profile_user.models.StudentProfile.objects" />
         </list>
       </option>
     </inspection_tool>

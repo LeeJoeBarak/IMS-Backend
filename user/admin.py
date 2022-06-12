@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-# from users.models import Student
 from user.models import Student, Company, ProgramManager, ProgramCoordinator, CompanyRepresentative, CompanyMentor
 
 admin.site.register(Student)
