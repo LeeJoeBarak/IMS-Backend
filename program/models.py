@@ -19,7 +19,7 @@ class Program(models.Model):
     prioritiesAmount = models.PositiveIntegerField(default=1)
     hoursRequired = models.PositiveIntegerField(default=100)
     department = models.CharField(max_length=100, default='Engine')
-    status = models.CharField(max_length=6, default='False')
+    status = models.CharField(max_length=6, default='True')
 
 
 # Student:
