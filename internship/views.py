@@ -610,6 +610,16 @@ class PostInternshipsPrioritiesByCandidate(generics.GenericAPIView):
                     student_priority_number=i + 1,
                 )
 
+        # remove old priorities that now was not chosen
+        priorities = Priority.objects.filter(Student_id=Student_id)
+        priorities_serializer = InternshipsPrioritiesByCandidateSerializer(priorities, many=True)
+        priorities_serializer = list(priorities_serializer.data)
+
+        for p in priorities_serializer:
+            if not p['internship_id'] in internshipName_array:
+                priority = Priority.objects.filter(Student_id=Student_id, internship_id=p['internship_id'])
+                priority.delete()
+
         return Response(content_type='successful saved priorities', status=status.HTTP_200_OK)
 
 
