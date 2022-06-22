@@ -35,6 +35,7 @@ react_routes = [
     'login',
     'changePass',
     'register',
+    'signup',
     'internships',
     'internshipsPriorities',
     'createInternship/manager',
