@@ -422,7 +422,8 @@ def get_companies_by_program(request, program):
 #     "company": "string",
 #     "internshipName": "string",
 #     "about": "string",
-#     "requirements": "string"
+#     "requirements": "string",
+#     "mentor": "string"
 # # }
 class PostCreateInternshipByProgramManager(generics.GenericAPIView):
     authentication_classes = []
