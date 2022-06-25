@@ -273,3 +273,31 @@ def get_mentors_by_companyRep(request, companyRep):
             mentor_details.append(mentor_detail)
 
         return JsonResponse(mentor_details, safe=False)
+
+
+# GET /companyRep/{username}/companyName:
+# {
+#     "username": "string",
+# }
+@api_view(['GET'])
+def get_company_of_companyRep(request, username):
+    if request.method == 'GET':
+        try:
+            # check if the username is of a real CompanyRepresentative
+            users = User.objects.all()
+            user = users.filter(username=username)
+            user_serializer = UserDetailsSerializer(user, many=True)
+            user_serializer = list(user_serializer.data)
+            user_serializer = user_serializer[0]
+            companyRep_id = user_serializer['id']
+            # check if the user is a mentor:
+            companyRep = CompanyRepresentative.objects.filter(user_id=companyRep_id)
+        except:
+            return Response('companyRep not found', status=HTTP_404_NOT_FOUND)
+        # get company's CompanyRepresentative:
+        companyRepresentative = CompanyRepresentativeSerializer(companyRep, many=True)
+        companyRepresentative = list(companyRepresentative.data)
+        companyRepresentative = companyRepresentative[0]
+        company = companyRepresentative['companyName']
+
+        return JsonResponse(company, safe=False)
