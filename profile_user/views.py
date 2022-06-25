@@ -125,24 +125,28 @@ class PostCreateCompanyProfile(generics.GenericAPIView):
     def post(self, request):
         try:
             company_name = request.data['companyName']
-            company = Company.objects.filter(pk=company_name)
+            company = Company.objects.get(pk=company_name)
         except:
             return Response('Invalid company supplied', status.HTTP_401_UNAUTHORIZED)
-        try:
-            company_profile = CompanyProfile.objects.filter(pk=company_name)
-        except:
+        company = Company.objects.filter(pk=company_name)
+        company_profile = CompanyProfile.objects.filter(companyName_id=company[0])
+        # return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
+        if len(company_profile) == 0:
+            company_profile = CompanyProfile.objects.create(
+                companyName_id=company,
+                yearEstablish=request.data['yearEstablish'],
+                workersAmount=request.data['workersAmount'],
+                linkedinLink=request.data['linkedinLink'],
+                location=request.data['location'],
+                about=request.data['about'])
+            company_profile.save()
+            return Response(content_type='successful create a profile to the company', status=status.HTTP_200_OK)
+        else:
             return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
-        # create company:
-        company_profile = CompanyProfile.objects.create(
-            companyName_id=company,
-            yearEstablish=request.data['yearEstablish'],
-            workersAmount=request.data['workersAmount'],
-            linkedinLink=request.data['linkedinLink'],
-            location=request.data['location'],
-            about=request.data['about'])
-        company_profile.save()
 
-        return Response(content_type='successful create a profile to the company', status=status.HTTP_200_OK)
+
+
+
 
 
 # GET /company/{companyName}
@@ -164,7 +168,7 @@ def get_company_profile(request, companyName):
             company_profile_serializer = list(company_profile_serializer.data)
             company_profile_serializer = company_profile_serializer[0]
         except:
-            return Response('Invalid company name supplied', status=status.HTTP_401_UNAUTHORIZED)
+            return Response('Company does not exist', status=status.HTTP_404_NOT_FOUND)
 
         company_details = {
             "companyName": companyName,
