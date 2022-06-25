@@ -299,5 +299,8 @@ def get_company_of_companyRep(request, username):
         companyRepresentative = list(companyRepresentative.data)
         companyRepresentative = companyRepresentative[0]
         company = companyRepresentative['companyName']
+        data = {
+            "data": company
+        }
 
-        return JsonResponse(company, safe=False)
+        return JsonResponse(data, safe=False)
