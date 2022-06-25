@@ -27,7 +27,8 @@ DEBUG = True
 # ALLOWED_HOSTS = []
 #End dev backend
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['testserver']
 
 #     Start adddddd prod!!!!!
 ALLOWED_HOSTS = ['https://rps.ise.bgu.ac.il/', 'https://rps.ise.bgu.ac.il/njsw36', '10.0.0.136', '132.72.116.72']
@@ -97,7 +98,6 @@ TEMPLATES = [
     },
 ]
 
-# print(STATICFILES_DIRS[0])
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -106,6 +106,7 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'ims_server.wsgi.application'
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'

@@ -64,6 +64,7 @@ urlpatterns = [
     path('mentors/<company>', user_views.get_mentors_by_company),
     path('users/details/<username>', user_views.get_details_about_user_by_username),
     path('programManagers', user_views.get_program_managers),
+    path('companyRep/<username>/companyName', user_views.get_company_of_companyRep),
     path('internships/<program>', internship_views.get_internships_by_program),
     path('mentorsByCompanyRep/<companyRep>', user_views.get_mentors_by_companyRep),
     path('companyRep/createInternship', internship_views.PostCreateInternshipByCompanyRep.as_view()),
