@@ -128,9 +128,17 @@ class PostCreateCompanyProfile(generics.GenericAPIView):
             company = Company.objects.get(pk=company_name)
         except:
             return Response('Invalid company supplied', status.HTTP_401_UNAUTHORIZED)
-        company = Company.objects.filter(pk=company_name)
-        company_profile = CompanyProfile.objects.filter(companyName_id=company[0])
-        # return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
+        try:
+            company = Company.objects.filter(pk=company_name)
+            company_profile = CompanyProfile.objects.filter(companyName_id=company[0])
+            workersAmount = request.data['workersAmount']
+            yearEstablish = request.data['yearEstablish']
+            location = request.data['location']
+            linkedinLink = request.data['linkedinLink']
+            about = request.data['about']
+        except:
+            return Response('Missing data', status.HTTP_400_BAD_REQUEST)
+
         if len(company_profile) == 0:
             company_profile = CompanyProfile.objects.create(
                 companyName_id=company,
@@ -142,11 +150,17 @@ class PostCreateCompanyProfile(generics.GenericAPIView):
             company_profile.save()
             return Response(content_type='successful create a profile to the company', status=status.HTTP_200_OK)
         else:
-            return Response('Already profile exist', status.HTTP_400_BAD_REQUEST)
-
-
-
-
+            try:
+                company_profile = company_profile[0]
+                company_profile.yearEstablish = yearEstablish
+                company_profile.workersAmount = workersAmount
+                company_profile.linkedinLink = linkedinLink
+                company_profile.location = location
+                company_profile.about = about
+                company_profile.save()
+                return Response('Profile update was successful', status.HTTP_200_OK)
+            except:
+                return Response('Profile update was not successful', status.HTTP_400_BAD_REQUEST)
 
 
 # GET /company/{companyName}
