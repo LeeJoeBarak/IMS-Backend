@@ -1077,25 +1077,25 @@ class PostUploadReportByMentor(generics.GenericAPIView):
             internshipAndMentor = InternshipAndMentor.objects.filter(mentor_id=mentor_id)
             internshipAndMentor_serializer = InternshipAndMentorSerializer(internshipAndMentor, many=True)
             internshipAndMentor_serializer = list(internshipAndMentor_serializer.data)
-            internshipAndMentor_serializer = internshipAndMentor_serializer[0]
-            internship_id_mentor = internshipAndMentor_serializer['id']
-            if internship_id_mentor != internship_id_intern:
-                return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
+            for i, internshipAndMentor in enumerate(internshipAndMentor_serializer):
+                # internshipAndMentor_serializer = internshipAndMentor_serializer[i]
+                internship_id_mentor = internshipAndMentor['internship_id']
+                if internship_id_mentor != internship_id_intern:
+                    continue
+                else:
+                    try:
+                        mentor_report = MentorReport.objects.get(intern_id=student_id)
+                        mentor_report.report = request.data['report']
+                        mentor_report.save()
+
+                    except:
+                        mentor_report = MentorReport.objects.create(
+                            report=request.data['report'],
+                            intern_id=student_id,
+                            mentor_id=mentor_id)
+                        mentor_report.save()
+                        return Response(content_type='successful upload', status=status.HTTP_200_OK)
 
         except:
             return Response('Invalid username/intern supplied', status=status.HTTP_401_UNAUTHORIZED)
-
-        try:
-            mentor_report = MentorReport.objects.get(intern_id=student_id)
-            mentor_report.report = request.data['report']
-            mentor_report.save()
-
-        except:
-            mentor_report = MentorReport.objects.create(
-                report=request.data['report'],
-                intern_id=student_id,
-                mentor_id=mentor_id)
-            mentor_report.save()
-            return Response(content_type='successful upload', status=status.HTTP_200_OK)
-
         return Response(content_type='successful upload', status=status.HTTP_200_OK)
