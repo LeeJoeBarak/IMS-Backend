@@ -772,16 +772,10 @@ class SetStatusByMentor(generics.GenericAPIView):
             content_type='successful set the student status', status=status.HTTP_200_OK)
 
 
-# POST /setInterns:
+# POST /programManager/approveAssign:
 # {
-#     "programManager_username":"string"
+#     "username":"string"
 #     "program": "string",
-#     "new_interns": [
-#         {
-#             "username": "string",
-#             "internship_id": "string"
-#         }
-#     ]
 # }
 class SetInternsToInternship(generics.GenericAPIView):
     authentication_classes = []
@@ -789,9 +783,10 @@ class SetInternsToInternship(generics.GenericAPIView):
 
     def post(self, request):
         try:
+            students_approve_assign = []
             # check manager username:
             users = User.objects.all()
-            user = users.filter(username=request.data['programManager_username'])
+            user = users.filter(username=request.data['username'])
             user_serializer = UserDetailsSerializer(user, many=True)
             user_serializer = list(user_serializer.data)
             user_serializer = user_serializer[0]
@@ -804,16 +799,35 @@ class SetInternsToInternship(generics.GenericAPIView):
             program_serializer = program_serializer[0]
             program_id = program_serializer['program_id']
 
+            # get new going to be interns:
+            internships = InternshipDetails.objects.filter(program_id=program_id)
+            internships_serializer = InternshipsFullSerializer(internships, many=True)
+            internships_serializer = list(internships_serializer.data)
+
+            for internship in internships_serializer:
+                students_priority = Priority.objects.filter(internship_id=internship['id'],
+                                                            status_decision_by_company='true',
+                                                            status_decision_by_program_manager='true')
+                students_priority_serializer = InternshipsPrioritiesByCandidateSerializer(students_priority, many=True)
+                students_priority_serializer = list(students_priority_serializer.data)
+                for student in students_priority_serializer:
+                    internship_id = internship['id']
+                    Student_id = student['Student_id']
+                    student_details = {
+                        'Student_id': Student_id,
+                        "internship_id": internship_id,
+                    }
+                    students_approve_assign.append(student_details)
+            program_id = request.data['program']
+
             # students:
-            for new_intern in request.data['new_interns']:
-                users = User.objects.all()
-                user = users.filter(username=new_intern['username'])
-                user_serializer = UserDetailsSerializer(user, many=True)
-                user_serializer = list(user_serializer.data)
-                user_serializer = user_serializer[0]
-                Student_id = user_serializer['id']
-                StudentAndProgram.objects.filter(program_id=request.data['program'], student_id=Student_id)
-                InternshipDetails.objects.filter(pk=new_intern['internship_id'])
+            for new_intern in students_approve_assign:
+                Student_id = new_intern['Student_id']
+                internship_id = new_intern['internship_id']
+
+                StudentAndProgram.objects.filter(program_id=program_id,
+                                                 student_id=Student_id)
+                InternshipDetails.objects.filter(pk=internship_id)
 
                 # Set intern:
                 assignIntern = InternshipAndIntern.objects.filter(
